@@ -136,4 +136,9 @@ public class CobaRestController {
         FileUtility.saveFile(uploadDir, fileName, kiriman);
         return "Berhasil mengunggah file " + fileName;
     }
+
+    @GetMapping("/encr")
+    public String cobaEncrypt(){
+        return SmtpConfig.getEmailUsername()+" -- "+SmtpConfig.getEmailPassword();
+    }
 }
