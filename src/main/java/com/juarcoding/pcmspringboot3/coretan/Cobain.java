@@ -1,10 +1,11 @@
 package com.juarcoding.pcmspringboot3.coretan;
 
+import com.juarcoding.pcmspringboot3.model.CobaRest;
 import com.juarcoding.pcmspringboot3.security.Crypto;
-import com.juarcoding.pcmspringboot3.utils.ObjectInjection;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.juarcoding.pcmspringboot3.utils.GlobalFunction;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Random;
 
 /*
@@ -39,17 +40,25 @@ public class Cobain {
 
 //        System.out.println("\\\\");
 //        System.out.println("$2a$11$nyjU3om84Gp6S6sv.n2KXOMo.BDfKo9buGQ.u8FDaEhWI4X5GNX7W".equals("$2a$11$RBDOEJ1RX14vzySpUAJnqeKoEJ3jvJK9ip./tCJquboLW.NHD14l."));
+//        System.out.println("Ini Username : "+Crypto.performDecrypt("552d01ab11300b7f496bbf71baf6a8c7"));
+//        System.out.println("Ini Password : "+Crypto.performDecrypt("39360fd6f563c8b6a95277e439563596"));
+//        System.out.println(Crypto.performEncrypt("isi text nya !!"));
+//        System.out.println(System.currentTimeMillis());
+//        System.out.println(Crypto.performEncrypt("CD#poll@gmail.com#1746457081029"));
+//        System.out.println(Crypto.performDecrypt("3124a67f19e80d187e5e58d24910d646895e5c69a5336e8173b89f8ef9749736"));
+//        String [] strArr = Crypto.performDecrypt("3124a67f19e80d187e5e58d24910d646895e5c69a5336e8173b89f8ef9749736").split("#");
+//        Long time = Long.parseLong(strArr[2]);
+//        Long now = System.currentTimeMillis();
+//        System.out.println(((now-time)/1000)<300);
+        CobaRest cobaRest = new CobaRest();
+        cobaRest.setId(1L);
+        cobaRest.setData1("OK");
 
-        System.out.println("Ini Username : "+Crypto.performDecrypt("552d01ab11300b7f496bbf71baf6a8c7"));
-        System.out.println("Ini Password : "+Crypto.performDecrypt("39360fd6f563c8b6a95277e439563596"));
-        System.out.println(Crypto.performEncrypt("isi text nya !!"));
-
-        System.out.println(System.currentTimeMillis());
-        System.out.println(Crypto.performEncrypt("CD#poll@gmail.com#1746457081029"));
-        System.out.println(Crypto.performDecrypt("3124a67f19e80d187e5e58d24910d646895e5c69a5336e8173b89f8ef9749736"));
-        String [] strArr = Crypto.performDecrypt("3124a67f19e80d187e5e58d24910d646895e5c69a5336e8173b89f8ef9749736").split("#");
-        Long time = Long.parseLong(strArr[2]);
-        Long now = System.currentTimeMillis();
-        System.out.println(((now-time)/1000)<300);
+//        cobaRest.getData1();
+//        cobaRest.getId();
+        Map<String,Object> m = GlobalFunction.convertClassToMap(cobaRest);
+        for (Map.Entry<String, Object> entry : m.entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue());
+        }
     }
 }
