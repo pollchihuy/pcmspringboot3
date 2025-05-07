@@ -1,0 +1,33 @@
+DROP IF EXISTS [projectz].[MstUser]
+GO
+CREATE TABLE [projectz].[MstUser] (
+  [ID] bigint  IDENTITY(1,1) NOT NULL,
+  [Username] varchar(16) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [Email] varchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [NoHp] varchar(18) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [Password] varchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [NamaLengkap] varchar(70) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [Alamat] varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS  NOT NULL,
+  [OTP] varchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [TanggalLahir] date  NOT NULL,
+  [LinkImage] varchar(256) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [PathImage] varchar(256) COLLATE SQL_Latin1_General_CP1_CI_AS  NULL,
+  [CreatedBy] bigint  NOT NULL,
+  [CreatedDate] datetime2(6)  NULL,
+  [ModifiedBy] bigint  NULL,
+  [ModifiedDate] datetime2(6)  NULL,
+  [IsRegistered] bit  NULL,
+  CONSTRAINT [PK__MstUser__3214EC275EB805B3] PRIMARY KEY CLUSTERED ([ID])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+ON [PRIMARY],
+  CONSTRAINT [UKoboap7j0f37yn6as1f4bdg8ge] UNIQUE NONCLUSTERED ([Email] ASC)
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+ON [PRIMARY],
+  CONSTRAINT [UKqjyie9v29y4i2hwga63gip2gr] UNIQUE NONCLUSTERED ([Username] ASC)
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+ON [PRIMARY]
+)
+ON [PRIMARY]
+GO
+
+ALTER TABLE [projectz].[MstUser] SET (LOCK_ESCALATION = TABLE)

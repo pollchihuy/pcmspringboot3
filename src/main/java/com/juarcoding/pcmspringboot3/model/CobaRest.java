@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-//@Table(name = "MstCobaRest")
+@Table(name = "MstCobaRest")
 //@Table(name = "MST_COBA_REST")
 public class CobaRest {
 
@@ -34,6 +34,7 @@ public class CobaRest {
     private Long modifiedBy;
     @Column(name = "ModifiedDate",insertable = false)
     private LocalDateTime modifiedDate;
+
 
     public Double getPresisih() {
         return presisih;
