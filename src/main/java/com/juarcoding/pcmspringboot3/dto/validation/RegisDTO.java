@@ -24,7 +24,7 @@ import java.time.LocalDate;
 public class RegisDTO {
 
     @Pattern(regexp = "^([a-z0-9\\.]{8,16})$",
-            message = "Format Huruf kecil ,numeric dan titik saja min 8 max 16 karakter, ex : paulch.123")
+            message = "Format Huruf kecil ,numeric dan titik saja min 8 max 16 karakter, ex : paulch.1234")
     private String username;
 
     @Pattern(regexp = "^(?=.{1,256})(?=.{1,64}@.{1,255}$)(?:(?![.])[a-zA-Z0-9._%+-]+(?:(?<!\\\\)[.][a-zA-Z0-9-]+)*?)@[a-zA-Z0-9.-]+(?:\\.[a-zA-Z]{2,50})+$",

@@ -11,4 +11,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
     // SELECT x.* FROM MstUser x WHERE x.Email = ?
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
+    Optional<User> findByUsernameOrEmailOrNoHp(String username,String email,String noHp);
+
 }
