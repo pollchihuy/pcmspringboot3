@@ -2,23 +2,36 @@ package com.juarcoding.pcmspringboot3.service;
 
 
 import com.juarcoding.pcmspringboot3.config.OtherConfig;
+import com.juarcoding.pcmspringboot3.core.SMTPCore;
 import com.juarcoding.pcmspringboot3.dto.validation.LoginDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.RegisDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.VerifyRegisDTO;
+import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
 import com.juarcoding.pcmspringboot3.model.User;
 import com.juarcoding.pcmspringboot3.repo.UserRepo;
 import com.juarcoding.pcmspringboot3.security.BcryptImpl;
+import com.juarcoding.pcmspringboot3.utils.SendMailOTP;
+import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.AuthenticationException;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+/**
+ * Kode Platform / Aplikasi : 001 atau AUT
+ * Kode Modul : 00
+ * Kode Validation / Error  : FV - FE
+ */
 @Service
 @Transactional
 public class AuthService {
@@ -31,70 +44,78 @@ public class AuthService {
 
     private Random random = new Random();
 
-    public ResponseEntity<Object> regis(User user) {
-        int otp = random.nextInt(100000,999999);
-        user.setOtp(String.valueOf(otp));
-        user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
-        userRepo.save(user);
-        Map<String,Object> m = new HashMap<>();
-        if(OtherConfig.getEnableAutomationTesting().equals("y")){
-            m.put("otp",otp);// ini untuk automation
+    /** 001-010 */
+    public ResponseEntity<Object> regis(User user, HttpServletRequest request) {
+        if(user==null){
+            return new ResponseHandler().handleResponse("Email Tidak Ditemukan !!",HttpStatus.BAD_REQUEST,null,"AUT00FV001",request);
         }
-        m.put("email",user.getEmail());
+        if(user.getEmail()==null){
+            return new ResponseHandler().handleResponse("Email Tidak Ditemukan !!",HttpStatus.BAD_REQUEST,null,"AUT00FV002",request);
+        }
+        Map<String,Object> m = new HashMap<>();
+        try{
+            int otp = random.nextInt(100000,999999);
+            user.setOtp(BcryptImpl.hash(String.valueOf(otp)));
+            user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
+            userRepo.save(user);
 
-        return ResponseEntity.ok(m);
+            if(OtherConfig.getEnableAutomationTesting().equals("y")){
+                m.put("otp",otp);// ini untuk automation
+            }
+            SendMailOTP.verifyRegisOTP("OTP UNTUK REGISTRASI",
+                    user.getNamaLengkap(),user.getEmail(),String.valueOf(otp),"ver_regis.html");
+            m.put("email",user.getEmail());
+            Thread.sleep(1000);
+        }catch (Exception e){
+            return new ResponseHandler().handleResponse("Server Tidak Dapat Memproses !!",HttpStatus.INTERNAL_SERVER_ERROR,null,"AUT00FE001",request);
+        }
+        return new ResponseHandler().handleResponse("OTP Terkirim, Cek Email !!",HttpStatus.OK,m,null,request);
     }
 
-    public ResponseEntity<Object> verifyRegis(User user) {
-        int otp = random.nextInt(100000,999999);
-        //lakukan Query ->
-        // matching OTP yang dikirim dengan yang di table
-        Map<String,Object> m = new HashMap<>();
-        Optional<User> opUser = userRepo.findByEmail(user.getEmail());
-        if(!opUser.isPresent()) {
-            m.put("message","Email Tidak Ditemukan !!");
-            return ResponseEntity.badRequest().body(m);
+    /** 011-020 */
+    public ResponseEntity<Object> verifyRegis(User user, HttpServletRequest request) {
+        try {
+            int otp = random.nextInt(100000,999999);
+            Optional<User> opUser = userRepo.findByEmail(user.getEmail());
+            if(!opUser.isPresent()) {
+                return new ResponseHandler().handleResponse("Email Tidak Ditemukan !!",HttpStatus.BAD_REQUEST,null,"AUT00FV011",request);
+            }
+            User userNext = opUser.get();//ini dari database
+            if(!BcryptImpl.verifyHash(user.getOtp(),userNext.getOtp())) {
+                return new ResponseHandler().handleResponse("OTP Salah !!",HttpStatus.BAD_REQUEST,null,"AUT00FV012",request);
+            }
+            userNext.setRegistered(true);
+            userNext.setModifiedBy(userNext.getId());
+            userNext.setOtp(String.valueOf(otp));
+        }catch (Exception e){
+            return new ResponseHandler().handleResponse("Terjadi Kesalahan Pada Server",HttpStatus.INTERNAL_SERVER_ERROR,null,
+                    "AUT00FE011",request);
         }
-        User userNext = opUser.get();//ini dari database
-        if(!userNext.getOtp().equals(user.getOtp())) {
-            m.put("message","OTP Salah !!");
-            return ResponseEntity.badRequest().body(m);
-        }
-        userNext.setRegistered(true);
-        userNext.setModifiedBy(userNext.getId());
-        userNext.setOtp(String.valueOf(otp));
-//        userNext.setModifiedDate(LocalDateTime.now());
-
-        m.put("message","Registrasi Berhasil");
-
-        return ResponseEntity.ok(m);
+        return new ResponseHandler().handleResponse("Registrasi Berhasil !!",HttpStatus.OK,null,null,request);
     }
 
-    public ResponseEntity<Object> login(User user) {
-        // username (username,email,noHp)
-        // password
-        String username = user.getUsername();
-        Optional<User> opUser = userRepo.findByUsernameOrEmailOrNoHp(username,username,username);
+    /** 021-030 */
+    public ResponseEntity<Object> login(User user, HttpServletRequest request) {
         Map<String,Object> m = new HashMap<>();
-        if(!opUser.isPresent()) {
-            m.put("message","User Tidak Ditemukan");
-            return ResponseEntity.badRequest().body(m);
-        }
-        User userNext = opUser.get();//diambil dari DB
+        try{
+            String username = user.getUsername();
+            Optional<User> opUser = userRepo.findByUsernameOrEmailOrNoHp(username,username,username);
+            if(!opUser.isPresent()) {
+                return new ResponseHandler().handleResponse("User Tidak Ditemukan",HttpStatus.BAD_REQUEST,null,"AUT00FV021",request);
+            }
+            User userNext = opUser.get();//diambil dari DB
 
-//        if(!userNext.getPassword().equals(user.getPassword())) {
-        String pwdDB = userNext.getUsername()+user.getPassword();
-//        if(!BcryptImpl.verifyHash(user.getPassword(),userNext.getPassword())) {
-        if(!BcryptImpl.verifyHash(pwdDB,userNext.getPassword())) {
-            m.put("message","Username atau Password Salah !!");
-            return ResponseEntity.badRequest().body(m);
+            String pwdDB = userNext.getUsername()+user.getPassword();
+            if(!BcryptImpl.verifyHash(pwdDB,userNext.getPassword())) {
+                return new ResponseHandler().handleResponse("Username atau Password Salah !!",HttpStatus.BAD_REQUEST,null,"AUT00FV022",request);
+            }
+        }catch (Exception e){
+            return new ResponseHandler().handleResponse("Terjadi Kesalahan Pada Server",HttpStatus.INTERNAL_SERVER_ERROR,null,
+                    "AUT00FE021",request);
         }
-
-        m.put("token","nanti di security");
         m.put("menu","sama aja nanti di security");
-        m.put("message","Login Berhasil");
-
-        return ResponseEntity.ok(m);
+        m.put("token","Nanti di security");
+        return new ResponseHandler().handleResponse("Login Berhasil !!",HttpStatus.OK,m,null,request);
     }
 
 //    public User mapToUser(RegisDTO regisDTO) {

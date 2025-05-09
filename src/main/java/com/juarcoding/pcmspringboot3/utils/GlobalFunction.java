@@ -1,10 +1,14 @@
 package com.juarcoding.pcmspringboot3.utils;
 
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 
+@Component
 public class GlobalFunction {
 
     public static Map<String,Object> convertClassToMap(Object object){
@@ -20,4 +24,10 @@ public class GlobalFunction {
         }
         return map;
     }
+
+
+//    @Async
+//    public void sendMail(){
+//
+//    }
 }

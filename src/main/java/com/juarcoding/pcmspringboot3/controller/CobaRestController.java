@@ -1,7 +1,7 @@
 package com.juarcoding.pcmspringboot3.controller;
 
 import com.juarcoding.pcmspringboot3.config.OtherConfig;
-import com.juarcoding.pcmspringboot3.config.SmtpConfig;
+import com.juarcoding.pcmspringboot3.config.SMTPConfig;
 import com.juarcoding.pcmspringboot3.dto.CustomerDTO;
 import com.juarcoding.pcmspringboot3.dto.DataDTO;
 import com.juarcoding.pcmspringboot3.service.CobaRestService;
@@ -49,14 +49,14 @@ public class CobaRestController {
         map.put("path","hello/gt");
         cobaRestService.save();
         System.out.println("Nilai CumiCumi adalah "+cumicumi);
-        System.out.println("Isi Username SMTPConfig "+ SmtpConfig.getEmailUsername());
+        System.out.println("Isi Username SMTPConfig "+ SMTPConfig.getEmailUserName());
         forScheduler.sampleAsync();
         System.out.println("Gak Nunggu Fungsi !!");
 //        DataDTO dto = new DataDTO();
 //        dto.setMessage("login");
 //        dto.setTimestamp(new Date());
 //        dto.setStatus(256);
-        SmtpConfig.getEmailUsername();
+        SMTPConfig.getEmailUserName();
         OtherConfig.getEnableLogFile();
         return map;
     }
@@ -139,6 +139,6 @@ public class CobaRestController {
 
     @GetMapping("/encr")
     public String cobaEncrypt(){
-        return SmtpConfig.getEmailUsername()+" -- "+SmtpConfig.getEmailPassword();
+        return SMTPConfig.getEmailUserName()+" -- "+SMTPConfig.getEmailPassword();
     }
 }

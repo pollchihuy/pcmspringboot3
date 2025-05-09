@@ -50,15 +50,16 @@ public class Cobain {
 //        Long time = Long.parseLong(strArr[2]);
 //        Long now = System.currentTimeMillis();
 //        System.out.println(((now-time)/1000)<300);
-        CobaRest cobaRest = new CobaRest();
-        cobaRest.setId(1L);
-        cobaRest.setData1("OK");
-
-//        cobaRest.getData1();
-//        cobaRest.getId();
-        Map<String,Object> m = GlobalFunction.convertClassToMap(cobaRest);
-        for (Map.Entry<String, Object> entry : m.entrySet()) {
-            System.out.println(entry.getKey() + ":" + entry.getValue());
-        }
+//        CobaRest cobaRest = new CobaRest();
+//        cobaRest.setId(1L);
+//        cobaRest.setData1("OK");
+//
+////        cobaRest.getData1();
+////        cobaRest.getId();
+//        Map<String,Object> m = GlobalFunction.convertClassToMap(cobaRest);
+//        for (Map.Entry<String, Object> entry : m.entrySet()) {
+//            System.out.println(entry.getKey() + ":" + entry.getValue());
+//        }
+        System.out.println("Adalah".equals("Ãdalah"));
     }
 }
