@@ -58,7 +58,6 @@ public class AuthService {
             user.setOtp(BcryptImpl.hash(String.valueOf(otp)));
             user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
             userRepo.save(user);
-
             if(OtherConfig.getEnableAutomationTesting().equals("y")){
                 m.put("otp",otp);// ini untuk automation
             }

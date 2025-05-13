@@ -23,9 +23,6 @@ public class GroupMenu {
     @Column(name = "Deskripsi", nullable = false, length = 255,unique = true)
     private String deskripsi;
 
-//    @OneToMany
-//    private List<Menu> menu;
-
     @Column(name = "CreatedBy",nullable = false,updatable = false)
     private Long createdBy=1L;
 
@@ -39,14 +36,6 @@ public class GroupMenu {
     @Column(name = "ModifiedDate",insertable = false)
     @UpdateTimestamp
     private LocalDateTime modifiedDate;
-
-//    public List<Menu> getMenu() {
-//        return menu;
-//    }
-//
-//    public void setMenu(List<Menu> menu) {
-//        this.menu = menu;
-//    }
 
     public Long getId() {
         return id;
