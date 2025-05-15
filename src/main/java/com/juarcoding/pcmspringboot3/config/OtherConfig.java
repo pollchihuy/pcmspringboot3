@@ -11,6 +11,16 @@ public class OtherConfig {
     private static String enableLogFile;
     private static String enableAutomationTesting;
     private static String smtpEnable;
+    private static Integer defaultPaginationSize;
+
+    public static Integer getDefaultPaginationSize() {
+        return defaultPaginationSize;
+    }
+
+    @Value("${default.pagination.size}")
+    public static void setDefaultPaginationSize(Integer defaultPaginationSize) {
+        OtherConfig.defaultPaginationSize = defaultPaginationSize;
+    }
 
     public static String getSmtpEnable() {
         return smtpEnable;

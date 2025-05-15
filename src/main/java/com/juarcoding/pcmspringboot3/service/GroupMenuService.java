@@ -9,7 +9,7 @@ import com.juarcoding.pcmspringboot3.dto.validation.ValGroupMenuDTO;
 import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
 import com.juarcoding.pcmspringboot3.model.GroupMenu;
 import com.juarcoding.pcmspringboot3.repo.GroupMenuRepo;
-import com.juarcoding.pcmspringboot3.utils.TransformPagination;
+import com.juarcoding.pcmspringboot3.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.modelmapper.ModelMapper;
@@ -23,9 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * Kode Platform / Aplikasi : AUT
@@ -45,6 +45,8 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
     @Autowired
     private TransformPagination tp;
 
+    private StringBuilder sBuild = new StringBuilder();
+
     @Override
     public ResponseEntity<Object> save(GroupMenu groupMenu, HttpServletRequest request) {//001-010
         try{
@@ -54,23 +56,23 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
             groupMenu.setCreatedBy(1L);
             groupMenuRepo.save(groupMenu);
         }catch (Exception e){
-            return new ResponseHandler().handleResponse("DATA GAGAL DISIMPAN ", HttpStatus.INTERNAL_SERVER_ERROR,null,"AUT01FE001",request);
+            return GlobalResponse.dataGagalDisimpan("AUT01FE001",request);
         }
-        return new ResponseHandler().handleResponse("DATA BERHASIL DISIMPAN !!",HttpStatus.CREATED,null,null,request);
+        return GlobalResponse.dataBerhasilDisimpan(request);
     }
 
     @Override
     public ResponseEntity<Object> update(Long id, GroupMenu groupMenu, HttpServletRequest request) {//011-020
         try{
             if(id == null){
-                return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT01FV011",request);
+                return GlobalResponse.objectIsNull("AUT01FV011",request);
             }
             if(groupMenu == null){
-                return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT01FV012",request);
+                return GlobalResponse.objectIsNull("AUT01FV012",request);
             }
             Optional<GroupMenu> opGroupMenu = groupMenuRepo.findById(id);
             if(!opGroupMenu.isPresent()){
-                return new ResponseHandler().handleResponse("Data Tidak Ditemukan !!", HttpStatus.BAD_REQUEST,null,"AUT01FV013",request);
+                return GlobalResponse.dataTidakDitemukan("AUT01FV013",request);
             }
             GroupMenu groupMenuDB = opGroupMenu.get();
             groupMenuDB.setNama(groupMenu.getNama());
@@ -78,27 +80,27 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
             groupMenuDB.setModifiedBy(1L);
 
         }catch (Exception e){
-            return new ResponseHandler().handleResponse("DATA GAGAL DIUBAH ", HttpStatus.INTERNAL_SERVER_ERROR,null,"AUT01FE011",request);
+            return GlobalResponse.dataGagalDiubah("AUT01FE011",request);
         }
-        return new ResponseHandler().handleResponse("DATA BERHASIL DIUBAH !!",HttpStatus.OK,null,null,request);
+        return GlobalResponse.dataBerhasilDiubah(request);
     }
 
     @Override
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {//021-030
         try{
             if(id==null){
-                return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT01FV021",request);
+                return GlobalResponse.objectIsNull("AUT01FV021",request);
             }
             Optional<GroupMenu> opGroupMenu = groupMenuRepo.findById(id);
             if(!opGroupMenu.isPresent()){
-                return new ResponseHandler().handleResponse("Data Tidak Ditemukan !!", HttpStatus.BAD_REQUEST,null,"AUT01FV022",request);
+                return GlobalResponse.dataTidakDitemukan("AUT01FV022",request);
             }
             groupMenuRepo.deleteById(id);
 
         }catch (Exception e){
-            return new ResponseHandler().handleResponse("DATA GAGAL DIHAPUS ", HttpStatus.INTERNAL_SERVER_ERROR,null,"AUT01FE021",request);
+            return GlobalResponse.dataGagalDihapus("AUT01FE021",request);
         }
-        return new ResponseHandler().handleResponse("DATA BERHASIL DIHAPUS !!",HttpStatus.OK,null,null,request);
+        return GlobalResponse.dataBerhasilDihapus(request);
     }
 
     @Override
@@ -110,12 +112,12 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
         try {
             page = groupMenuRepo.findAll(pageable);
             if(page.isEmpty()){
-                return new ResponseHandler().handleResponse("Data Tidak Ditemukan !!", HttpStatus.BAD_REQUEST,null,"AUT01FV031",request);
+                return GlobalResponse.dataTidakDitemukan("AUT01FV031",request);
             }
             listDTO = mapToDTO(page.getContent());
             data = tp.transformPagination(listDTO,page,"id","");
         }catch (Exception e){
-            return new ResponseHandler().handleResponse("TERJADI KESALAHAN", HttpStatus.INTERNAL_SERVER_ERROR,null,"AUT01FE031",request);
+            return GlobalResponse.terjadiKesalahan("AUT01FE031",request);
         }
         return new ResponseHandler().handleResponse("DATA DITEMUKAN",HttpStatus.OK,
                 data,null,request);
@@ -126,39 +128,131 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
         ResGroupMenuDTO resGroupMenuDTO = null;
         try{
             if(id==null){
-                return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT01FV041",request);
+                return GlobalResponse.objectIsNull("AUT01FV041",request);
+
             }
             Optional<GroupMenu> opGroupMenu = groupMenuRepo.findById(id);
             if(!opGroupMenu.isPresent()){
-                return new ResponseHandler().handleResponse("Data Tidak Ditemukan !!", HttpStatus.BAD_REQUEST,null,"AUT01FV042",request);
+                return GlobalResponse.dataTidakDitemukan("AUT01FV042",request);
             }
             GroupMenu groupMenuDB = opGroupMenu.get();
             resGroupMenuDTO = mapToDTO(groupMenuDB);
         }catch (Exception e){
-            return new ResponseHandler().handleResponse("TERJADI KESALAHAN ", HttpStatus.INTERNAL_SERVER_ERROR,null,"AUT01FE041",request);
+            return GlobalResponse.terjadiKesalahan("AUT01FE041",request);
         }
 
-        return new ResponseHandler().handleResponse("DATA DITEMUKAN !!",HttpStatus.OK,resGroupMenuDTO,null,request);
+        return GlobalResponse.dataDitemukan(request);
     }
 
     @Override
-    public ResponseEntity<Object> findByParam(Pageable pageable, String columnName, String value, HttpServletRequest request) {
-        return null;
+    public ResponseEntity<Object> findByParam(Pageable pageable, String columnName, String value, HttpServletRequest request) {//051-060
+        Page<GroupMenu> page = null;
+        List<RepGroupMenuDTO> listDTO = null;
+        Map<String,Object> data = null;
+        try {
+            switch (columnName){
+                case "nama":page = groupMenuRepo.findByNamaContainsIgnoreCase(value,pageable);break;
+                case "deskripsi":page = groupMenuRepo.findByDeskripsiContainsIgnoreCase(value,pageable);break;
+                default:page = groupMenuRepo.findAll(pageable);
+            }
+            if(page.isEmpty()){
+                return GlobalResponse.dataTidakDitemukan("AUT01FV051",request);
+            }
+            listDTO = mapToDTO(page.getContent());
+            data = tp.transformPagination(listDTO,page,columnName,value);
+        }catch (Exception e){
+            return GlobalResponse.terjadiKesalahan("AUT01FE051",request);
+        }
+        return GlobalResponse.dataDitemukan(request);
     }
 
     @Override
-    public ResponseEntity<Object> uploadDataExcel(MultipartFile multipartFile, HttpServletRequest request) {
-        return null;
+    public ResponseEntity<Object> uploadDataExcel(MultipartFile multipartFile, HttpServletRequest request) {//061-070
+        String message = "";
+        try{
+            if(!ExcelReader.hasWorkBookFormat(multipartFile)){
+                return GlobalResponse.formatHarusExcel("AUT01FV061",request);
+            }
+            List lt = new ExcelReader(multipartFile.getInputStream(),"Sheet1").getDataMap();
+            if(lt.isEmpty()){
+                return GlobalResponse.fileExcelKosong("AUT01FV062",request);
+            }
+            groupMenuRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
+        }catch (Exception e){
+            return GlobalResponse.terjadiKesalahan("AUT01FE061",request);
+        }
+
+        return GlobalResponse.uploadFileExcelBerhasil(request);
     }
 
     @Override
-    public List<GroupMenu> convertListWorkBookToListEntity(List<Map<String, String>> workBookData, Long userId) {
-        return List.of();
+    public List<GroupMenu> convertListWorkBookToListEntity(List<Map<String, String>> workBookData,
+                                                           Long userId) {
+        List<GroupMenu> list = new ArrayList<>();
+        for (Map<String,String> map:workBookData) {
+            GroupMenu groupMenu = new GroupMenu();
+            groupMenu.setNama(map.get("Nama-Group-Menu"));
+            groupMenu.setDeskripsi(map.get("Deskripsi-Group-Menu"));
+            groupMenu.setCreatedBy(userId);
+            list.add(groupMenu);
+        }
+        return list;
     }
 
     @Override
-    public void downloadReportExcel(String column, String value, HttpServletRequest request, HttpServletResponse response) {
+    public void downloadReportExcel(String column, String value,
+                                    HttpServletRequest request, HttpServletResponse response) {//071-080
+        List<GroupMenu> listGroupMenu = null;
+        try {
+            switch (column){
+                case "nama" : listGroupMenu = groupMenuRepo.findByNamaContainsIgnoreCase(value);break;
+                case "deskripsi" : listGroupMenu = groupMenuRepo.findByDeskripsiContainsIgnoreCase(value);break;
+                default:listGroupMenu=groupMenuRepo.findAll();break;
+            }
+            if(listGroupMenu.isEmpty()){
+                GlobalResponse.
+                        manualResponse(response,GlobalResponse.dataTidakDitemukan("AUT01FV071",request));
+                return;
+            }
+            List<RepGroupMenuDTO> listDTO = mapToDTO(listGroupMenu);
 
+            String headerKey = "Content-Disposition";
+            sBuild.setLength(0);
+            String headerValue = sBuild.append("attachment; filename=group-menu_").
+//                    append(new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss").format(new Date()))
+                    append(new SimpleDateFormat("ddMMyyyyHHmmss").format(new Date())).
+                    append(".xlsx")
+                    .toString();//group-menu_12-05-2025_18:22:33
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader(headerKey, headerValue);
+
+            Map<String,Object> map = GlobalFunction.convertClassToMap(new RepGroupMenuDTO());
+            List<String> listTemp = new ArrayList<>();
+            for (Map.Entry<String,Object> entry : map.entrySet()) {
+                listTemp.add(entry.getKey());
+            }
+            int intListTemp = listTemp.size();
+            String [] headerArr = new String[intListTemp];//kolom judul di excel
+            String [] loopDataArr = new String[intListTemp];//kolom judul java reflection
+
+            for (int i = 0; i < intListTemp; i++) {
+                headerArr[i] = GlobalFunction.camelToStandard(listTemp.get(i));
+                loopDataArr[i] = listTemp.get(i);
+            }
+            int intListDTOSize = listDTO.size();
+            String [][] strBody = new String[intListDTOSize][intListTemp];
+            for (int i = 0; i < intListDTOSize; i++) {
+                map = GlobalFunction.convertClassToMap(listDTO.get(i));
+                for (int j = 0; j < intListTemp; j++) {
+                    strBody[i][j] = String.valueOf(map.get(loopDataArr[j]));
+                }
+            }
+            new ExcelWriter(strBody,headerArr,"sheet-1",response);
+        }catch (Exception e){
+            GlobalResponse.
+                    manualResponse(response,GlobalResponse.terjadiKesalahan("AUT01FE071",request));
+            return;
+        }
     }
 
     @Override

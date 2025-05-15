@@ -1,0 +1,21 @@
+POST http://localhost:8085/auth/regis
+Content-Type: application/json
+
+{
+	"username":"paul.123",
+	"email":"poll.chihuy@gmail.com",
+	"no-hp":"081213141321",
+	"password":"Paul@1234",
+	"nama-lengkap":"Paul Malau",
+	"alamat":"Bogor Bogor Bogor Bogor Bogor ",
+	"tanggal-lahir":"1995-12-12"
+}
+
+### verify login
+POST http://localhost:8085/auth/login
+Content-Type: application/json
+
+{
+  "username":"poll.chihuy@gmail.com",
+  "password":"Paul@1234"
+}

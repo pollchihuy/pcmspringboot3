@@ -25,6 +25,22 @@ public class GlobalFunction {
         return map;
     }
 
+    public static String camelToStandard(String camel){
+        StringBuilder sb = new StringBuilder();
+        char c = camel.charAt(0);
+        sb.append(Character.toLowerCase(c));
+        for (int i = 1; i < camel.length(); i++) {
+            char c1 = camel.charAt(i);
+            if(Character.isUpperCase(c1)){
+                sb.append(' ').append(Character.toLowerCase(c1));
+            }
+            else {
+                sb.append(c1);
+            }
+        }
+        return sb.toString();
+    }
+
 
 //    @Async
 //    public void sendMail(){

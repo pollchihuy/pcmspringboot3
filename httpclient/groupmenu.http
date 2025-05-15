@@ -1,0 +1,33 @@
+### group menu save
+POST http://localhost:8085/group-menu
+Content-Type: application/json
+
+{
+  "nama":"User Management",
+  "deskripsi":"Group Menu Untuk User Management"
+}
+
+### group menu update
+PUT http://localhost:8085/group-menu/1
+Content-Type: application/json
+
+{
+	"nama":"User Management Update",
+	"deskripsi":"Group Menu Untuk User Management Update"
+}
+
+### group menu delete
+DELETE http://localhost:8085/group-menu/1
+Content-Type: application/json
+
+### group menu findall
+GET http://localhost:8085/group-menu
+Content-Type: application/json
+
+### group menu findById
+GET http://localhost:8085/group-menu/2
+Content-Type: application/json
+
+### group menu findByParam
+GET http://localhost:8085/group-menu/asc/id/0?size=5&column=nama&value=man
+Content-Type: application/json

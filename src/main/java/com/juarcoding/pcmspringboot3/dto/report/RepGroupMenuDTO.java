@@ -12,6 +12,7 @@ public class RepGroupMenuDTO {
 
     private String deskripsi;
 
+
     public Long getId() {
         return id;
     }
