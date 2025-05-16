@@ -39,8 +39,8 @@ public class GlobalResponse {
         return new ResponseHandler().handleResponse("TERJADI KESALAHAN", HttpStatus.INTERNAL_SERVER_ERROR,null,errorCode,request);
     }
 
-    public static ResponseEntity<Object> dataDitemukan(HttpServletRequest request){
-        return new ResponseHandler().handleResponse("DATA DITEMUKAN", HttpStatus.OK,null,null,request);
+    public static ResponseEntity<Object> dataDitemukan(Object data,HttpServletRequest request){
+        return new ResponseHandler().handleResponse("DATA DITEMUKAN", HttpStatus.OK,data,null,request);
     }
 
     public static ResponseEntity<Object> dataTidakDitemukan(String errorCode , HttpServletRequest request){

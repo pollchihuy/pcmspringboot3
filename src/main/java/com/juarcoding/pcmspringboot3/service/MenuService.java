@@ -3,12 +3,12 @@ package com.juarcoding.pcmspringboot3.service;
 
 import com.juarcoding.pcmspringboot3.core.IReport;
 import com.juarcoding.pcmspringboot3.core.IService;
-import com.juarcoding.pcmspringboot3.dto.report.RepGroupMenuDTO;
-import com.juarcoding.pcmspringboot3.dto.response.ResGroupMenuDTO;
-import com.juarcoding.pcmspringboot3.dto.validation.ValGroupMenuDTO;
+import com.juarcoding.pcmspringboot3.dto.report.RepMenuDTO;
+import com.juarcoding.pcmspringboot3.dto.response.ResMenuDTO;
+import com.juarcoding.pcmspringboot3.dto.validation.ValMenuDTO;
 import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
-import com.juarcoding.pcmspringboot3.model.GroupMenu;
-import com.juarcoding.pcmspringboot3.repo.GroupMenuRepo;
+import com.juarcoding.pcmspringboot3.model.Menu;
+import com.juarcoding.pcmspringboot3.repo.MenuRepo;
 import com.juarcoding.pcmspringboot3.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,20 +26,19 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
  * Kode Platform / Aplikasi : AUT
- * Kode Modul : 01
+ * Kode Modul : 02
  * Kode Validation / Error  : FV - FE
  */
 @Service
 @Transactional
-public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu> {
+public class MenuService implements IService<Menu>, IReport<Menu> {
 
     @Autowired
-    private GroupMenuRepo groupMenuRepo;
+    private MenuRepo menuRepo;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -56,39 +55,40 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
     private StringBuilder sBuild = new StringBuilder();
 
     @Override
-    public ResponseEntity<Object> save(GroupMenu groupMenu, HttpServletRequest request) {//001-010
+    public ResponseEntity<Object> save(Menu menu, HttpServletRequest request) {//001-010
         try{
-            if(groupMenu == null){
-                return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT01FV001",request);
+            if(menu == null){
+                return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT02FV001",request);
             }
-            groupMenu.setCreatedBy(1L);
-            groupMenuRepo.save(groupMenu);
+            menu.setCreatedBy(1L);
+            menuRepo.save(menu);
         }catch (Exception e){
-            return GlobalResponse.dataGagalDisimpan("AUT01FE001",request);
+            return GlobalResponse.dataGagalDisimpan("AUT02FE001",request);
         }
         return GlobalResponse.dataBerhasilDisimpan(request);
     }
 
     @Override
-    public ResponseEntity<Object> update(Long id, GroupMenu groupMenu, HttpServletRequest request) {//011-020
+    public ResponseEntity<Object> update(Long id, Menu menu, HttpServletRequest request) {//011-020
         try{
             if(id == null){
-                return GlobalResponse.objectIsNull("AUT01FV011",request);
+                return GlobalResponse.objectIsNull("AUT02FV011",request);
             }
-            if(groupMenu == null){
-                return GlobalResponse.objectIsNull("AUT01FV012",request);
+            if(menu == null){
+                return GlobalResponse.objectIsNull("AUT02FV012",request);
             }
-            Optional<GroupMenu> opGroupMenu = groupMenuRepo.findById(id);
-            if(!opGroupMenu.isPresent()){
-                return GlobalResponse.dataTidakDitemukan("AUT01FV013",request);
+            Optional<Menu> opMenu = menuRepo.findById(id);
+            if(!opMenu.isPresent()){
+                return GlobalResponse.dataTidakDitemukan("AUT02FV013",request);
             }
-            GroupMenu groupMenuDB = opGroupMenu.get();
-            groupMenuDB.setNama(groupMenu.getNama());
-            groupMenuDB.setDeskripsi(groupMenu.getDeskripsi());
-            groupMenuDB.setModifiedBy(1L);
+            Menu menuDB = opMenu.get();
+            menuDB.setNama(menu.getNama());
+            menuDB.setDeskripsi(menu.getDeskripsi());
+            menuDB.setPath(menu.getPath());
+            menuDB.setModifiedBy(1L);
 
         }catch (Exception e){
-            return GlobalResponse.dataGagalDiubah("AUT01FE011",request);
+            return GlobalResponse.dataGagalDiubah("AUT02FE011",request);
         }
         return GlobalResponse.dataBerhasilDiubah(request);
     }
@@ -97,78 +97,79 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {//021-030
         try{
             if(id==null){
-                return GlobalResponse.objectIsNull("AUT01FV021",request);
+                return GlobalResponse.objectIsNull("AUT02FV021",request);
             }
-            Optional<GroupMenu> opGroupMenu = groupMenuRepo.findById(id);
-            if(!opGroupMenu.isPresent()){
-                return GlobalResponse.dataTidakDitemukan("AUT01FV022",request);
+            Optional<Menu> opMenu = menuRepo.findById(id);
+            if(!opMenu.isPresent()){
+                return GlobalResponse.dataTidakDitemukan("AUT02FV022",request);
             }
-            groupMenuRepo.deleteById(id);
+            menuRepo.deleteById(id);
 
         }catch (Exception e){
-            return GlobalResponse.dataGagalDihapus("AUT01FE021",request);
+            return GlobalResponse.dataGagalDihapus("AUT02FE021",request);
         }
         return GlobalResponse.dataBerhasilDihapus(request);
     }
 
     @Override
     public ResponseEntity<Object> findAll(Pageable pageable, HttpServletRequest request) {//031-040
-        Page<GroupMenu> page = null;
-        List<GroupMenu> list = null;
-        List<RepGroupMenuDTO> listDTO = null;
+        Page<Menu> page = null;
+        List<Menu> list = null;
+        List<RepMenuDTO> listDTO = null;
         Map<String,Object> data = null;
         try {
-            page = groupMenuRepo.findAll(pageable);
+            page = menuRepo.findAll(pageable);
             if(page.isEmpty()){
-                return GlobalResponse.dataTidakDitemukan("AUT01FV031",request);
+                return GlobalResponse.dataTidakDitemukan("AUT02FV031",request);
             }
             listDTO = mapToDTO(page.getContent());
             data = tp.transformPagination(listDTO,page,"id","");
         }catch (Exception e){
-            return GlobalResponse.terjadiKesalahan("AUT01FE031",request);
+            return GlobalResponse.terjadiKesalahan("AUT02FE031",request);
         }
         return GlobalResponse.dataDitemukan(listDTO,request);
     }
 
     @Override
     public ResponseEntity<Object> findById(Long id, HttpServletRequest request) {//041-050
-        ResGroupMenuDTO resGroupMenuDTO = null;
+        ResMenuDTO resMenuDTO = null;
         try{
             if(id==null){
-                return GlobalResponse.objectIsNull("AUT01FV041",request);
+                return GlobalResponse.objectIsNull("AUT02FV041",request);
 
             }
-            Optional<GroupMenu> opGroupMenu = groupMenuRepo.findById(id);
-            if(!opGroupMenu.isPresent()){
-                return GlobalResponse.dataTidakDitemukan("AUT01FV042",request);
+            Optional<Menu> opMenu = menuRepo.findById(id);
+            if(!opMenu.isPresent()){
+                return GlobalResponse.dataTidakDitemukan("AUT02FV042",request);
             }
-            GroupMenu groupMenuDB = opGroupMenu.get();
-            resGroupMenuDTO = mapToDTO(groupMenuDB);
+            Menu menuDB = opMenu.get();
+            resMenuDTO = mapToDTO(menuDB);
         }catch (Exception e){
-            return GlobalResponse.terjadiKesalahan("AUT01FE041",request);
+            return GlobalResponse.terjadiKesalahan("AUT02FE041",request);
         }
 
-        return GlobalResponse.dataDitemukan(resGroupMenuDTO,request);
+        return GlobalResponse.dataDitemukan(resMenuDTO,request);
     }
 
     @Override
     public ResponseEntity<Object> findByParam(Pageable pageable, String columnName, String value, HttpServletRequest request) {//051-060
-        Page<GroupMenu> page = null;
-        List<RepGroupMenuDTO> listDTO = null;
+        Page<Menu> page = null;
+        List<RepMenuDTO> listDTO = null;
         Map<String,Object> data = null;
         try {
             switch (columnName){
-                case "nama":page = groupMenuRepo.findByNamaContainsIgnoreCase(value,pageable);break;
-                case "deskripsi":page = groupMenuRepo.findByDeskripsiContainsIgnoreCase(value,pageable);break;
-                default:page = groupMenuRepo.findAll(pageable);
+                case "nama":page = menuRepo.findByNamaContainsIgnoreCase(value,pageable);break;
+                case "deskripsi":page = menuRepo.findByDeskripsiContainsIgnoreCase(value,pageable);break;
+                case "path":page = menuRepo.findByPathContainsIgnoreCase(value,pageable);break;
+                default:page = menuRepo.findAll(pageable);
             }
             if(page.isEmpty()){
-                return GlobalResponse.dataTidakDitemukan("AUT01FV051",request);
+                return GlobalResponse.dataTidakDitemukan("AUT02FV051",request);
             }
             listDTO = mapToDTO(page.getContent());
             data = tp.transformPagination(listDTO,page,columnName,value);
         }catch (Exception e){
-            return GlobalResponse.terjadiKesalahan("AUT01FE051",request);
+            return GlobalResponse.terjadiKesalahan("AUT02FE051",request);
         }
         return GlobalResponse.dataDitemukan(listDTO,request);
     }
@@ -178,30 +179,31 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
         String message = "";
         try{
             if(!ExcelReader.hasWorkBookFormat(multipartFile)){
-                return GlobalResponse.formatHarusExcel("AUT01FV061",request);
+                return GlobalResponse.formatHarusExcel("AUT02FV061",request);
             }
             List lt = new ExcelReader(multipartFile.getInputStream(),"Sheet1").getDataMap();
             if(lt.isEmpty()){
-                return GlobalResponse.fileExcelKosong("AUT01FV062",request);
+                return GlobalResponse.fileExcelKosong("AUT02FV062",request);
             }
-            groupMenuRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
+            menuRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
         }catch (Exception e){
-            return GlobalResponse.terjadiKesalahan("AUT01FE061",request);
+            return GlobalResponse.terjadiKesalahan("AUT02FE061",request);
         }
 
         return GlobalResponse.uploadFileExcelBerhasil(request);
     }
 
     @Override
-    public List<GroupMenu> convertListWorkBookToListEntity(List<Map<String, String>> workBookData,
+    public List<Menu> convertListWorkBookToListEntity(List<Map<String, String>> workBookData,
                                                            Long userId) {
-        List<GroupMenu> list = new ArrayList<>();
+        List<Menu> list = new ArrayList<>();
         for (Map<String,String> map:workBookData) {
-            GroupMenu groupMenu = new GroupMenu();
-            groupMenu.setNama(map.get("Nama-Group-Menu"));
-            groupMenu.setDeskripsi(map.get("Deskripsi-Group-Menu"));
-            groupMenu.setCreatedBy(userId);
-            list.add(groupMenu);
+            Menu menu = new Menu();
+            menu.setNama(map.get("Nama-Menu"));
+            menu.setDeskripsi(map.get("Deskripsi-Menu"));
+            menu.setPath(map.get("Path-Menu"));
+            menu.setCreatedBy(userId);
+            list.add(menu);
         }
         return list;
     }
@@ -209,29 +211,30 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
     @Override
     public void downloadReportExcel(String column, String value,
                                     HttpServletRequest request, HttpServletResponse response) {//071-080
-        List<GroupMenu> listGroupMenu = null;
+        List<Menu> listMenu = null;
         try {
             switch (column){
-                case "nama" : listGroupMenu = groupMenuRepo.findByNamaContainsIgnoreCase(value);break;
-                case "deskripsi" : listGroupMenu = groupMenuRepo.findByDeskripsiContainsIgnoreCase(value);break;
-                default:listGroupMenu=groupMenuRepo.findAll();break;
+                case "nama" : listMenu = menuRepo.findByNamaContainsIgnoreCase(value);break;
+                case "deskripsi" : listMenu = menuRepo.findByDeskripsiContainsIgnoreCase(value);break;
+                case "path" : listMenu = menuRepo.findByPathContainsIgnoreCase(value);break;
+                default:listMenu= menuRepo.findAll();break;
             }
-            if(listGroupMenu.isEmpty()){
+            if(listMenu.isEmpty()){
                 GlobalResponse.
-                        manualResponse(response,GlobalResponse.dataTidakDitemukan("AUT01FV071",request));
+                        manualResponse(response,GlobalResponse.dataTidakDitemukan("AUT02FV071",request));
                 return;
             }
-            List<RepGroupMenuDTO> listDTO = mapToDTO(listGroupMenu);
+            List<RepMenuDTO> listDTO = mapToDTO(listMenu);
 
             String headerKey = "Content-Disposition";
             sBuild.setLength(0);
-            String headerValue = sBuild.append("attachment; filename=group-menu_").
+            String headerValue = sBuild.append("attachment; filename=menu_").
                     append(new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss").format(new Date())).
-                    append(".xlsx").toString();//group-menu_12-05-2025_18:22:33
+                    append(".xlsx").toString();//menu_12-05-2025_18:22:33
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             response.setHeader(headerKey, headerValue);
 
-            Map<String,Object> map = GlobalFunction.convertClassToMap(new RepGroupMenuDTO());
+            Map<String,Object> map = GlobalFunction.convertClassToMap(new RepMenuDTO());
             List<String> listTemp = new ArrayList<>();
             for (Map.Entry<String,Object> entry : map.entrySet()) {
                 listTemp.add(entry.getKey());
@@ -255,31 +258,32 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
             new ExcelWriter(strBody,headerArr,"sheet-1",response);
         }catch (Exception e){
             GlobalResponse.
-                    manualResponse(response,GlobalResponse.terjadiKesalahan("AUT01FE071",request));
+                    manualResponse(response,GlobalResponse.terjadiKesalahan("AUT02FE071",request));
             return;
         }
     }
 
     @Override
     public void generateToPDF(String column, String value, HttpServletRequest request, HttpServletResponse response) {//081-090
-        List<GroupMenu> listGroupMenu = null;
+        List<Menu> listMenu = null;
         try {
             switch (column){
-                case "nama" : listGroupMenu = groupMenuRepo.findByNamaContainsIgnoreCase(value);break;
-                case "deskripsi" : listGroupMenu = groupMenuRepo.findByDeskripsiContainsIgnoreCase(value);break;
-                default:listGroupMenu=groupMenuRepo.findAll();break;
+                case "nama" : listMenu = menuRepo.findByNamaContainsIgnoreCase(value);break;
+                case "deskripsi" : listMenu = menuRepo.findByDeskripsiContainsIgnoreCase(value);break;
+                case "path" : listMenu = menuRepo.findByPathContainsIgnoreCase(value);break;
+                default:listMenu= menuRepo.findAll();break;
             }
-            if(listGroupMenu.isEmpty()){
+            if(listMenu.isEmpty()){
                 GlobalResponse.
-                        manualResponse(response,GlobalResponse.dataTidakDitemukan("AUT01FV081",request));
+                        manualResponse(response,GlobalResponse.dataTidakDitemukan("AUT02FV081",request));
                 return;
             }
-            List<RepGroupMenuDTO> listDTO = mapToDTO(listGroupMenu);
-            int intRepGroupMenuDTOSize = listDTO.size();
+            List<RepMenuDTO> listDTO = mapToDTO(listMenu);
+            int intRepMenuDTOSize = listDTO.size();
             Map<String,Object> mapResponse = new HashMap<>();
             String strHtml = null;
             Context context = new Context();
-            Map<String,Object> mapColumnName = GlobalFunction.convertClassToMap(new RepGroupMenuDTO());
+            Map<String,Object> mapColumnName = GlobalFunction.convertClassToMap(new RepMenuDTO());
             List<String> listTemp = new ArrayList<>();
             List<String> listHelper = new ArrayList<>();
             for (Map.Entry<String,Object> m:mapColumnName.entrySet()) {
@@ -289,39 +293,39 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
 
             Map<String,Object> mapTemp = null;
             List<Map<String,Object>> listMap = new ArrayList<>();
-            for (int i = 0; i < intRepGroupMenuDTOSize; i++) {
+            for (int i = 0; i < intRepMenuDTOSize; i++) {
                 mapTemp = GlobalFunction.convertClassToMap(listDTO.get(i));
                 listMap.add(mapTemp);
             }
 
-            mapResponse.put("title","REPORT DATA GROUP MENU");
+            mapResponse.put("title","REPORT DATA MENU");
             mapResponse.put("listKolom",listTemp);
             mapResponse.put("listHelper",listHelper);
             mapResponse.put("listContent",listMap);
-            mapResponse.put("totalData",intRepGroupMenuDTOSize);
+            mapResponse.put("totalData",intRepMenuDTOSize);
             mapResponse.put("username","Paul");
 
             context.setVariables(mapResponse);
             strHtml = springTemplateEngine.process("global-report",context);
-            pdfGenerator.htmlToPdf(strHtml,"group-menu",response);
+            pdfGenerator.htmlToPdf(strHtml,"menu",response);
         }catch (Exception e){
             GlobalResponse.
-                    manualResponse(response,GlobalResponse.terjadiKesalahan("AUT01FE081",request));
+                    manualResponse(response,GlobalResponse.terjadiKesalahan("AUT02FE081",request));
             return;
         }
     }
 
     /** additional function */
 
-    public GroupMenu mapToGroupMenu(ValGroupMenuDTO valGroupMenuDTO){
-        return modelMapper.map(valGroupMenuDTO, GroupMenu.class);
+    public Menu mapToMenu(ValMenuDTO valMenuDTO){
+        return modelMapper.map(valMenuDTO, Menu.class);
     }
 
-    public List<RepGroupMenuDTO> mapToDTO(List<GroupMenu> listGroupMenu){
-        return modelMapper.map(listGroupMenu,new TypeToken<List<RepGroupMenuDTO>>(){}.getType());
+    public List<RepMenuDTO> mapToDTO(List<Menu> listMenu){
+        return modelMapper.map(listMenu,new TypeToken<List<RepMenuDTO>>(){}.getType());
     }
 
-    public ResGroupMenuDTO mapToDTO(GroupMenu groupMenu){
-        return modelMapper.map(groupMenu,ResGroupMenuDTO.class);
+    public ResMenuDTO mapToDTO(Menu menu){
+        return modelMapper.map(menu,ResMenuDTO.class);
     }
 }

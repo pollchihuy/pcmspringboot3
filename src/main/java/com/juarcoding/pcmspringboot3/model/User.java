@@ -73,6 +73,18 @@ public class User {
     @Column(name = "TokenEstafet",length = 64)
     private String tokenEstafet;
 
+    @ManyToOne
+    @JoinColumn(name = "IDAkses",foreignKey = @ForeignKey(name = "fk-user-to-akses"))
+    private Akses akses;
+
+    public Akses getAkses() {
+        return akses;
+    }
+
+    public void setAkses(Akses akses) {
+        this.akses = akses;
+    }
+
     public String getTokenEstafet() {
         return tokenEstafet;
     }

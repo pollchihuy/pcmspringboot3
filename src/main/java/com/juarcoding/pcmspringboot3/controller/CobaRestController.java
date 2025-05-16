@@ -36,8 +36,7 @@ public class CobaRestController {
 //        return crs;
 //    }
 
-    @Value("${cumi.cumi}")
-    private String cumicumi;
+    private String cumicumi="OK";
 
 
     @GetMapping("/gt")

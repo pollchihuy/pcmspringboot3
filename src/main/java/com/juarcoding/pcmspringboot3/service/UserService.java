@@ -1,0 +1,345 @@
+package com.juarcoding.pcmspringboot3.service;
+
+
+import com.juarcoding.pcmspringboot3.core.IReport;
+import com.juarcoding.pcmspringboot3.core.IService;
+import com.juarcoding.pcmspringboot3.dto.report.RepUserDTO;
+import com.juarcoding.pcmspringboot3.dto.response.ResUserDTO;
+import com.juarcoding.pcmspringboot3.dto.validation.ValUserDTO;
+import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
+import com.juarcoding.pcmspringboot3.model.User;
+import com.juarcoding.pcmspringboot3.repo.UserRepo;
+import com.juarcoding.pcmspringboot3.security.BcryptImpl;
+import com.juarcoding.pcmspringboot3.utils.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.*;
+
+/**
+ * Kode Platform / Aplikasi : AUT
+ * Kode Modul : 04
+ * Kode Validation / Error  : FV - FE
+ */
+@Service
+@Transactional
+public class UserService implements IService<User>, IReport<User> {
+
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private TransformPagination tp;
+
+    @Autowired
+    private SpringTemplateEngine springTemplateEngine;
+
+    @Autowired
+    private PdfGenerator pdfGenerator;
+
+    private StringBuilder sBuild = new StringBuilder();
+
+    @Override
+    public ResponseEntity<Object> save(User user, HttpServletRequest request) {//001-010
+        try{
+            if(user == null){
+                return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT04FV001",request);
+            }
+            user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
+            user.setCreatedBy(1L);
+            userRepo.save(user);
+        }catch (Exception e){
+            return GlobalResponse.dataGagalDisimpan("AUT04FE001",request);
+        }
+        return GlobalResponse.dataBerhasilDisimpan(request);
+    }
+
+    @Override
+    public ResponseEntity<Object> update(Long id, User user, HttpServletRequest request) {//011-020
+        try{
+            if(id == null){
+                return GlobalResponse.objectIsNull("AUT04FV011",request);
+            }
+            if(user == null){
+                return GlobalResponse.objectIsNull("AUT04FV012",request);
+            }
+            Optional<User> opUser = userRepo.findById(id);
+            if(!opUser.isPresent()){
+                return GlobalResponse.dataTidakDitemukan("AUT04FV013",request);
+            }
+            User userDB = opUser.get();
+            userDB.setNamaLengkap(user.getNamaLengkap());
+            userDB.setAlamat(user.getAlamat());
+            userDB.setNoHp(user.getNoHp());
+            userDB.setEmail(user.getEmail());
+            userDB.setTanggalLahir(user.getTanggalLahir());
+            userDB.setAkses(user.getAkses());
+            userDB.setModifiedBy(1L);
+
+        }catch (Exception e){
+            return GlobalResponse.dataGagalDiubah("AUT04FE011",request);
+        }
+        return GlobalResponse.dataBerhasilDiubah(request);
+    }
+
+    @Override
+    public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {//021-030
+        try{
+            if(id==null){
+                return GlobalResponse.objectIsNull("AUT04FV021",request);
+            }
+            Optional<User> opUser = userRepo.findById(id);
+            if(!opUser.isPresent()){
+                return GlobalResponse.dataTidakDitemukan("AUT04FV022",request);
+            }
+            userRepo.deleteById(id);
+
+        }catch (Exception e){
+            return GlobalResponse.dataGagalDihapus("AUT04FE021",request);
+        }
+        return GlobalResponse.dataBerhasilDihapus(request);
+    }
+
+    @Override
+    public ResponseEntity<Object> findAll(Pageable pageable, HttpServletRequest request) {//031-040
+        Page<User> page = null;
+        List<User> list = null;
+        List<RepUserDTO> listDTO = null;
+        Map<String,Object> data = null;
+        try {
+            page = userRepo.findAll(pageable);
+            if(page.isEmpty()){
+                return GlobalResponse.dataTidakDitemukan("AUT04FV031",request);
+            }
+            listDTO = mapToDTO(page.getContent());
+            data = tp.transformPagination(listDTO,page,"id","");
+        }catch (Exception e){
+            return GlobalResponse.terjadiKesalahan("AUT04FE031",request);
+        }
+        return GlobalResponse.dataDitemukan(listDTO,request);
+    }
+
+    @Override
+    public ResponseEntity<Object> findById(Long id, HttpServletRequest request) {//041-050
+        ResUserDTO resUserDTO = null;
+        try{
+            if(id==null){
+                return GlobalResponse.objectIsNull("AUT04FV041",request);
+
+            }
+            Optional<User> opUser = userRepo.findById(id);
+            if(!opUser.isPresent()){
+                return GlobalResponse.dataTidakDitemukan("AUT04FV042",request);
+            }
+            User userDB = opUser.get();
+            resUserDTO = mapToDTO(userDB);
+        }catch (Exception e){
+            return GlobalResponse.terjadiKesalahan("AUT04FE041",request);
+        }
+
+        return GlobalResponse.dataDitemukan(resUserDTO,request);
+    }
+
+    @Override
+    public ResponseEntity<Object> findByParam(Pageable pageable, String columnName, String value, HttpServletRequest request) {//051-060
+        Page<User> page = null;
+        List<RepUserDTO> listDTO = null;
+        Map<String,Object> data = null;
+        try {
+            switch (columnName){
+                case "nama-lengkap":page = userRepo.findByNamaLengkapContainsIgnoreCase(value,pageable);break;
+                case "alamat":page = userRepo.findByAlamatContainsIgnoreCase(value,pageable);break;
+                case "no-hp":page = userRepo.findByNoHpContainsIgnoreCase(value,pageable);break;
+//                case "tanggal-lahir":page = userRepo.findByTanggalLahirContainsIgnoreCase(value,pageable);break;
+                case "email":page = userRepo.findByEmailContainsIgnoreCase(value,pageable);break;
+                default:page = userRepo.findAll(pageable);
+            }
+            if(page.isEmpty()){
+                return GlobalResponse.dataTidakDitemukan("AUT04FV051",request);
+            }
+            listDTO = mapToDTO(page.getContent());
+            data = tp.transformPagination(listDTO,page,columnName,value);
+        }catch (Exception e){
+            return GlobalResponse.terjadiKesalahan("AUT04FE051",request);
+        }
+        return GlobalResponse.dataDitemukan(listDTO,request);
+    }
+
+    @Override
+    public ResponseEntity<Object> uploadDataExcel(MultipartFile multipartFile, HttpServletRequest request) {//061-070
+        String message = "";
+        try{
+            if(!ExcelReader.hasWorkBookFormat(multipartFile)){
+                return GlobalResponse.formatHarusExcel("AUT04FV061",request);
+            }
+            List lt = new ExcelReader(multipartFile.getInputStream(),"Sheet1").getDataMap();
+            if(lt.isEmpty()){
+                return GlobalResponse.fileExcelKosong("AUT04FV062",request);
+            }
+            userRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
+        }catch (Exception e){
+            return GlobalResponse.terjadiKesalahan("AUT04FE061",request);
+        }
+
+        return GlobalResponse.uploadFileExcelBerhasil(request);
+    }
+
+    @Override
+    public List<User> convertListWorkBookToListEntity(List<Map<String, String>> workBookData,
+                                                           Long userId) {
+        List<User> list = new ArrayList<>();
+        for (Map<String,String> map:workBookData) {
+            User user = new User();
+            user.setNamaLengkap(map.get("Nama-Lengkap"));
+            user.setAlamat(map.get("Alamat"));
+            user.setNoHp(map.get("No-Hp"));
+            user.setTanggalLahir(LocalDate.parse(map.get("Tanggal-Lahir").toString()));
+            user.setEmail(map.get("Email"));
+            user.setCreatedBy(userId);
+            list.add(user);
+        }
+        return list;
+    }
+
+    @Override
+    public void downloadReportExcel(String column, String value,
+                                    HttpServletRequest request, HttpServletResponse response) {//071-080
+        List<User> listUser = null;
+        try {
+            switch (column){
+                case "nama-lengkap":listUser = userRepo.findByNamaLengkapContainsIgnoreCase(value);break;
+                case "alamat":listUser = userRepo.findByAlamatContainsIgnoreCase(value);break;
+                case "no-hp":listUser = userRepo.findByNoHpContainsIgnoreCase(value);break;
+//                case "tanggal-lahir":listUser = userRepo.findByTanggalLahirContainsIgnoreCase(value);break;
+                case "email":listUser = userRepo.findByEmailContainsIgnoreCase(value);break;
+                default:listUser= userRepo.findAll();break;
+            }
+            if(listUser.isEmpty()){
+                GlobalResponse.
+                        manualResponse(response,GlobalResponse.dataTidakDitemukan("AUT04FV071",request));
+                return;
+            }
+            List<RepUserDTO> listDTO = mapToDTO(listUser);
+
+            String headerKey = "Content-Disposition";
+            sBuild.setLength(0);
+            String headerValue = sBuild.append("attachment; filename=user_").
+                    append(new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss").format(new Date())).
+                    append(".xlsx").toString();//user_12-05-2025_18:22:33
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader(headerKey, headerValue);
+
+            Map<String,Object> map = GlobalFunction.convertClassToMap(new RepUserDTO());
+            List<String> listTemp = new ArrayList<>();
+            for (Map.Entry<String,Object> entry : map.entrySet()) {
+                listTemp.add(entry.getKey());
+            }
+            int intListTemp = listTemp.size();
+            String [] headerArr = new String[intListTemp];//kolom judul di excel
+            String [] loopDataArr = new String[intListTemp];//kolom judul java reflection
+
+            for (int i = 0; i < intListTemp; i++) {
+                headerArr[i] = GlobalFunction.camelToStandard(listTemp.get(i));
+                loopDataArr[i] = listTemp.get(i);
+            }
+            int intListDTOSize = listDTO.size();
+            String [][] strBody = new String[intListDTOSize][intListTemp];
+            for (int i = 0; i < intListDTOSize; i++) {
+                map = GlobalFunction.convertClassToMap(listDTO.get(i));
+                for (int j = 0; j < intListTemp; j++) {
+                    strBody[i][j] = String.valueOf(map.get(loopDataArr[j]));
+                }
+            }
+            new ExcelWriter(strBody,headerArr,"sheet-1",response);
+        }catch (Exception e){
+            GlobalResponse.
+                    manualResponse(response,GlobalResponse.terjadiKesalahan("AUT04FE071",request));
+            return;
+        }
+    }
+
+    @Override
+    public void generateToPDF(String column, String value, HttpServletRequest request, HttpServletResponse response) {//081-090
+        List<User> listUser = null;
+        try {
+            switch (column){
+                case "nama-lengkap":listUser = userRepo.findByNamaLengkapContainsIgnoreCase(value);break;
+                case "alamat":listUser = userRepo.findByAlamatContainsIgnoreCase(value);break;
+                case "no-hp":listUser = userRepo.findByNoHpContainsIgnoreCase(value);break;
+//                case "tanggal-lahir":listUser = userRepo.findByTanggalLahirContainsIgnoreCase(value);break;
+                case "email":listUser = userRepo.findByEmailContainsIgnoreCase(value);break;
+                default:listUser= userRepo.findAll();break;
+            }
+            if(listUser.isEmpty()){
+                GlobalResponse.
+                        manualResponse(response,GlobalResponse.dataTidakDitemukan("AUT04FV081",request));
+                return;
+            }
+            List<RepUserDTO> listDTO = mapToDTO(listUser);
+            int intRepUserDTOSize = listDTO.size();
+            Map<String,Object> mapResponse = new HashMap<>();
+            String strHtml = null;
+            Context context = new Context();
+            Map<String,Object> mapColumnName = GlobalFunction.convertClassToMap(new RepUserDTO());
+            List<String> listTemp = new ArrayList<>();
+            List<String> listHelper = new ArrayList<>();
+            for (Map.Entry<String,Object> m:mapColumnName.entrySet()) {
+                listTemp.add(GlobalFunction.camelToStandard(m.getKey()));
+                listHelper.add(m.getKey());
+            }
+
+            Map<String,Object> mapTemp = null;
+            List<Map<String,Object>> listMap = new ArrayList<>();
+            for (int i = 0; i < intRepUserDTOSize; i++) {
+                mapTemp = GlobalFunction.convertClassToMap(listDTO.get(i));
+                listMap.add(mapTemp);
+            }
+
+            mapResponse.put("title","REPORT DATA MENU");
+            mapResponse.put("listKolom",listTemp);
+            mapResponse.put("listHelper",listHelper);
+            mapResponse.put("listContent",listMap);
+            mapResponse.put("totalData",intRepUserDTOSize);
+            mapResponse.put("username","Paul");
+
+            context.setVariables(mapResponse);
+            strHtml = springTemplateEngine.process("global-report",context);
+            pdfGenerator.htmlToPdf(strHtml,"user",response);
+        }catch (Exception e){
+            GlobalResponse.
+                    manualResponse(response,GlobalResponse.terjadiKesalahan("AUT04FE081",request));
+            return;
+        }
+    }
+
+    /** additional function */
+
+    public User mapToUser(ValUserDTO valUserDTO){
+        return modelMapper.map(valUserDTO, User.class);
+    }
+
+    public List<RepUserDTO> mapToDTO(List<User> listUser){
+        return modelMapper.map(listUser,new TypeToken<List<RepUserDTO>>(){}.getType());
+    }
+
+    public ResUserDTO mapToDTO(User user){
+        return modelMapper.map(user,ResUserDTO.class);
+    }
+}

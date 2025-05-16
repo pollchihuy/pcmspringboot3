@@ -1,17 +1,12 @@
-package com.juarcoding.pcmspringboot3.dto.response;
+package com.juarcoding.pcmspringboot3.dto.report;
 
-
-public class ResMenuDTO {
+public class RepAksesDTO {
 
     private Long id;
 
     private String nama;
 
-    private String path;
-
     private String deskripsi;
-
-    private ResGroupMenuDTO groupMenu;
 
     public Long getId() {
         return id;
@@ -29,27 +24,11 @@ public class ResMenuDTO {
         this.nama = nama;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
     public String getDeskripsi() {
         return deskripsi;
     }
 
     public void setDeskripsi(String deskripsi) {
         this.deskripsi = deskripsi;
-    }
-
-    public ResGroupMenuDTO getGroupMenu() {
-        return groupMenu;
-    }
-
-    public void setGroupMenu(ResGroupMenuDTO groupMenu) {
-        this.groupMenu = groupMenu;
     }
 }

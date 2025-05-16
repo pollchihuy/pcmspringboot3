@@ -5,8 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 public interface IService<T> {
-
-    // X Y Z
     /** CRUD */
     //AUT02FE034
     public ResponseEntity<Object> save(T t, HttpServletRequest request);//001-010

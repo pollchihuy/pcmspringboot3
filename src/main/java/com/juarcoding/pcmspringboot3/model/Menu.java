@@ -26,9 +26,6 @@ public class Menu {
     @Column(name = "Deskripsi", nullable = false, length = 255,unique = true)
     private String deskripsi;
 
-//    @ManyToMany(mappedBy = "listMenu")
-//    private List<Akses> listAkses ;
-
     @ManyToOne
     @JoinColumn(name = "IDGroupMenu",foreignKey = @ForeignKey(name = "fk-to-groupmenu"))
     private GroupMenu groupMenu;
@@ -46,14 +43,6 @@ public class Menu {
     @Column(name = "ModifiedDate",insertable = false)
     @UpdateTimestamp
     private LocalDateTime modifiedDate;
-
-//    public List<Akses> getListAkses() {
-//        return listAkses;
-//    }
-//
-//    public void setListAkses(List<Akses> listAkses) {
-//        this.listAkses = listAkses;
-//    }
 
     public Long getId() {
         return id;

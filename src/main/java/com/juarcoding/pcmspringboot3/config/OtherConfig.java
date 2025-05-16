@@ -18,7 +18,7 @@ public class OtherConfig {
     }
 
     @Value("${default.pagination.size}")
-    public static void setDefaultPaginationSize(Integer defaultPaginationSize) {
+    private void setDefaultPaginationSize(Integer defaultPaginationSize) {
         OtherConfig.defaultPaginationSize = defaultPaginationSize;
     }
 

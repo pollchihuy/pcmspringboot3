@@ -1,8 +1,8 @@
 package com.juarcoding.pcmspringboot3.controller;
 
 import com.juarcoding.pcmspringboot3.config.OtherConfig;
-import com.juarcoding.pcmspringboot3.dto.validation.ValMenuDTO;
-import com.juarcoding.pcmspringboot3.service.MenuService;
+import com.juarcoding.pcmspringboot3.dto.validation.ValUserDTO;
+import com.juarcoding.pcmspringboot3.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -17,34 +17,34 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerMapping;
 
 @RestController
-@RequestMapping("menu")
-public class MenuController {
+@RequestMapping("user")
+public class UserController {
 
 
     @Autowired
-    private MenuService menuService;
+    private UserService userService;
     @Qualifier("resourceHandlerMapping")
     @Autowired
     private HandlerMapping resourceHandlerMapping;
 
 
     @PostMapping
-    public ResponseEntity<Object> save(@Valid @RequestBody ValMenuDTO valMenuDTO,
+    public ResponseEntity<Object> save(@Valid @RequestBody ValUserDTO valUserDTO,
                                        HttpServletRequest request){
-        return menuService.save(menuService.mapToMenu(valMenuDTO),request);
+        return userService.save(userService.mapToUser(valUserDTO),request);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody ValMenuDTO valMenuDTO,
+    public ResponseEntity<Object> update(@Valid @RequestBody ValUserDTO valUserDTO,
                                        @PathVariable Long id,
                                        HttpServletRequest request){
-        return menuService.update(id, menuService.mapToMenu(valMenuDTO),request);
+        return userService.update(id, userService.mapToUser(valUserDTO),request);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id,
                                          HttpServletRequest request){
-        return menuService.delete(id,request);
+        return userService.delete(id,request);
     }
 
     /** defaultSearch
@@ -53,14 +53,14 @@ public class MenuController {
     @GetMapping
     public ResponseEntity<Object> findAll(HttpServletRequest request){
         Pageable pageable = PageRequest.of(0, OtherConfig.getDefaultPaginationSize(), Sort.by("id"));
-        return menuService.findAll(pageable,request);
+        return userService.findAll(pageable,request);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(
             @PathVariable Long id,
             HttpServletRequest request){
-        return menuService.findById(id,request);
+        return userService.findById(id,request);
     }
 
     @GetMapping("/{sort}/{sort-by}/{page}")
@@ -78,12 +78,12 @@ public class MenuController {
             case "desc":pageable = PageRequest.of(page,size, Sort.by("id").descending());break;
             default:pageable = PageRequest.of(page,size, Sort.by("id"));break;
         }
-        return menuService.findByParam(pageable,column,value,request);
+        return userService.findByParam(pageable,column,value,request);
     }
 
     @PostMapping("/upload-excel")
     public ResponseEntity<Object> uploadExcel(@RequestParam MultipartFile file, HttpServletRequest request){
-        return menuService.uploadDataExcel(file,request);
+        return userService.uploadDataExcel(file,request);
     }
 
     @GetMapping("/download-excel")
@@ -91,7 +91,7 @@ public class MenuController {
             @RequestParam String value,
             HttpServletRequest request,
             HttpServletResponse response){
-        menuService.downloadReportExcel(column,value,request,response);
+        userService.downloadReportExcel(column,value,request,response);
     }
 
     @GetMapping("/download-pdf")
@@ -99,14 +99,16 @@ public class MenuController {
                               @RequestParam String value,
                               HttpServletRequest request,
                               HttpServletResponse response){
-        menuService.generateToPDF(column,value,request,response);
+        userService.generateToPDF(column,value,request,response);
     }
 
     private String sortColumn(String column){
         switch (column){
-            case "nama":column="nama";break;
-            case "deskripsi":column="deskripsi";break;
-            case "path":column="path";break;
+            case "nama-lengkap":column="nama-lengkap";break;
+            case "alamat":column="alamat";break;
+            case "tanggal-lahir":column="tanggal-lahir";break;
+            case "no-hp":column="no-hp";break;
+            case "email":column="email";break;
             default:column="id";break;
         }
         return column;

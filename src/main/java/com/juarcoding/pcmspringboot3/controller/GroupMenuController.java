@@ -98,6 +98,14 @@ public class GroupMenuController {
         groupMenuService.downloadReportExcel(column,value,request,response);
     }
 
+    @GetMapping("/download-pdf")
+    public void downloadPdf(@RequestParam String column,
+                              @RequestParam String value,
+                              HttpServletRequest request,
+                              HttpServletResponse response){
+        groupMenuService.generateToPDF(column,value,request,response);
+    }
+
     private String sortColumn(String column){
         switch (column){
             case "nama":column="nama";break;
