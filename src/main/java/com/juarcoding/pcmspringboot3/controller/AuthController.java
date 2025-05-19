@@ -4,6 +4,7 @@ import com.juarcoding.pcmspringboot3.dto.validation.LoginDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.RegisDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.VerifyRegisDTO;
 import com.juarcoding.pcmspringboot3.service.AuthService;
+import com.juarcoding.pcmspringboot3.utils.GlobalFunction;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginDTO loginDTO
             , HttpServletRequest request){
+
+//        GlobalFunction.printConsole("Username  : "+loginDTO.getUsername());
+//        GlobalFunction.printConsole("Password  : "+loginDTO.getPassword());
         return authService.login(authService.mapToUser(loginDTO),request);
     }
 }

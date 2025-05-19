@@ -256,6 +256,8 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
         }catch (Exception e){
             GlobalResponse.
                     manualResponse(response,GlobalResponse.terjadiKesalahan("AUT03FE071",request));
+            LoggingFile.logException("AksesService","downloadReportExcel(String column, String value,\n" +
+                    "HttpServletRequest request, HttpServletResponse response)",e);
             return;
         }
     }

@@ -10,6 +10,8 @@ import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
 import com.juarcoding.pcmspringboot3.model.User;
 import com.juarcoding.pcmspringboot3.repo.UserRepo;
 import com.juarcoding.pcmspringboot3.security.BcryptImpl;
+import com.juarcoding.pcmspringboot3.utils.LoggingFile;
+import com.juarcoding.pcmspringboot3.utils.RequestCapture;
 import com.juarcoding.pcmspringboot3.utils.SendMailOTP;
 import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
@@ -66,6 +68,12 @@ public class AuthService {
             m.put("email",user.getEmail());
             Thread.sleep(1000);
         }catch (Exception e){
+//            String strArr [] = {"poll.chihuy@gmail.com","alfin@gmail.com",""};
+            LoggingFile.logException("AuthService","regis(User user, HttpServletRequest request)"+ RequestCapture.allRequest(request),e);
+//            new SMTPCore().sendMailWithAttachment(strArr,
+//                    "Error ",
+//                    "AuthService, "+"regis(User user, HttpServletRequest request)"+ RequestCapture.allRequest(request)+"    ----> "+e.getMessage(),
+//                    "TLS",null);
             return new ResponseHandler().handleResponse("Server Tidak Dapat Memproses !!",HttpStatus.INTERNAL_SERVER_ERROR,null,"AUT00FE001",request);
         }
         return new ResponseHandler().handleResponse("OTP Terkirim, Cek Email !!",HttpStatus.OK,m,null,request);
@@ -87,6 +95,8 @@ public class AuthService {
             userNext.setModifiedBy(userNext.getId());
             userNext.setOtp(String.valueOf(otp));
         }catch (Exception e){
+            LoggingFile.logException("AuthService","verifyRegis(User user, HttpServletRequest request)"+ RequestCapture.allRequest(request),e);
+
             return new ResponseHandler().handleResponse("Terjadi Kesalahan Pada Server",HttpStatus.INTERNAL_SERVER_ERROR,null,
                     "AUT00FE011",request);
         }
@@ -97,6 +107,7 @@ public class AuthService {
     public ResponseEntity<Object> login(User user, HttpServletRequest request) {
         Map<String,Object> m = new HashMap<>();
         try{
+            int i=1/0;
             String username = user.getUsername();
             Optional<User> opUser = userRepo.findByUsernameOrEmailOrNoHp(username,username,username);
             if(!opUser.isPresent()) {
@@ -109,8 +120,11 @@ public class AuthService {
                 return new ResponseHandler().handleResponse("Username atau Password Salah !!",HttpStatus.BAD_REQUEST,null,"AUT00FV022",request);
             }
         }catch (Exception e){
+            LoggingFile.logException("AuthService","login(User user, HttpServletRequest request)"+ RequestCapture.allRequest(request),e);
+
             return new ResponseHandler().handleResponse("Terjadi Kesalahan Pada Server",HttpStatus.INTERNAL_SERVER_ERROR,null,
                     "AUT00FE021",request);
+
         }
         m.put("menu","sama aja nanti di security");
         m.put("token","Nanti di security");

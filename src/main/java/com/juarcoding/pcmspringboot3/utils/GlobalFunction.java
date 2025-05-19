@@ -1,5 +1,6 @@
 package com.juarcoding.pcmspringboot3.utils;
 
+import com.juarcoding.pcmspringboot3.config.OtherConfig;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,12 @@ public class GlobalFunction {
             }
         }
         return sb.toString();
+    }
+
+    public static void printConsole(Object o){
+        if(OtherConfig.getEnablePrintConsole().equals("y")){
+            System.out.println(o);
+        }
     }
 
 
