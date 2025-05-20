@@ -1,6 +1,8 @@
 package com.juarcoding.pcmspringboot3.core;
 
 
+import com.juarcoding.pcmspringboot3.config.JwtConfig;
+import com.juarcoding.pcmspringboot3.security.Crypto;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -17,6 +19,10 @@ public class CustomHttpFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String strContentType = request.getContentType()==null?"":request.getContentType();
+        String token= ((HttpServletRequest) request).getHeader("Authorization");
+        if(JwtConfig.getTokenEncryptEnable().equals("y")){
+            token = Crypto.performDecrypt(token);
+        }
         if(!strContentType.startsWith("multipart/form-data") || "".equals(strContentType)){
             request = new MyHttpServletRequestWrapper(httpRequest);
         }

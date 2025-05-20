@@ -1,6 +1,7 @@
 package com.juarcoding.pcmspringboot3.service;
 
 
+import com.juarcoding.pcmspringboot3.config.JwtConfig;
 import com.juarcoding.pcmspringboot3.config.OtherConfig;
 import com.juarcoding.pcmspringboot3.core.SMTPCore;
 import com.juarcoding.pcmspringboot3.dto.validation.LoginDTO;
@@ -10,6 +11,8 @@ import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
 import com.juarcoding.pcmspringboot3.model.User;
 import com.juarcoding.pcmspringboot3.repo.UserRepo;
 import com.juarcoding.pcmspringboot3.security.BcryptImpl;
+import com.juarcoding.pcmspringboot3.security.Crypto;
+import com.juarcoding.pcmspringboot3.security.JwtUtility;
 import com.juarcoding.pcmspringboot3.utils.LoggingFile;
 import com.juarcoding.pcmspringboot3.utils.RequestCapture;
 import com.juarcoding.pcmspringboot3.utils.SendMailOTP;
@@ -43,6 +46,9 @@ public class AuthService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private JwtUtility jwtUtility;
 
     private Random random = new Random();
 
@@ -106,14 +112,14 @@ public class AuthService {
     /** 021-030 */
     public ResponseEntity<Object> login(User user, HttpServletRequest request) {
         Map<String,Object> m = new HashMap<>();
+        User userNext = null;
         try{
-            int i=1/0;
             String username = user.getUsername();
             Optional<User> opUser = userRepo.findByUsernameOrEmailOrNoHp(username,username,username);
             if(!opUser.isPresent()) {
                 return new ResponseHandler().handleResponse("User Tidak Ditemukan",HttpStatus.BAD_REQUEST,null,"AUT00FV021",request);
             }
-            User userNext = opUser.get();//diambil dari DB
+            userNext = opUser.get();//diambil dari DB
 
             String pwdDB = userNext.getUsername()+user.getPassword();
             if(!BcryptImpl.verifyHash(pwdDB,userNext.getPassword())) {
@@ -124,10 +130,22 @@ public class AuthService {
 
             return new ResponseHandler().handleResponse("Terjadi Kesalahan Pada Server",HttpStatus.INTERNAL_SERVER_ERROR,null,
                     "AUT00FE021",request);
-
         }
+
+        Map<String,Object> mapData = new HashMap<>();
+        mapData.put("email",userNext.getEmail());
+        mapData.put("noHp",userNext.getNoHp());
+        mapData.put("namaLengkap",userNext.getNamaLengkap());
+        mapData.put("password",userNext.getPassword());
+        mapData.put("tanggalLahir",userNext.getTanggalLahir().toString());
+
+        String token = jwtUtility.doGenerateToken(mapData,userNext.getUsername());
         m.put("menu","sama aja nanti di security");
-        m.put("token","Nanti di security");
+        if(JwtConfig.getTokenEncryptEnable().equals("y")){
+            token = Crypto.performEncrypt(token);
+        }
+        m.put("token", token);
+
         return new ResponseHandler().handleResponse("Login Berhasil !!",HttpStatus.OK,m,null,request);
     }
 
