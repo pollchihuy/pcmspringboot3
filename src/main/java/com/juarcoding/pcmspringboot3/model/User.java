@@ -4,13 +4,21 @@ package com.juarcoding.pcmspringboot3.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "MstUser")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -76,6 +84,37 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "IDAkses",foreignKey = @ForeignKey(name = "fk-user-to-akses"))
     private Akses akses;
+
+    /** disini letak role dari user nya yang akan di baca di API nanti */
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<Menu> lt = this.akses.getListMenu();
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        for (Menu m :lt) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(m.getNama()));
+        }
+        return grantedAuthorities;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
 
     public Akses getAkses() {
         return akses;

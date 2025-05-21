@@ -1,5 +1,6 @@
 package com.juarcoding.pcmspringboot3.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.juarcoding.pcmspringboot3.security.Crypto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,10 @@ public class MainConfig {
     @Bean
     public ModelMapper getModelMapper(){
         return new ModelMapper();
+    }
+
+    @Bean
+    public ObjectMapper getObjectMapper(){
+        return new ObjectMapper();
     }
 }

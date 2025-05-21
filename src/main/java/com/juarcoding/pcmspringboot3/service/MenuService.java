@@ -56,11 +56,12 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
 
     @Override
     public ResponseEntity<Object> save(Menu menu, HttpServletRequest request) {//001-010
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(menu == null){
                 return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT02FV001",request);
             }
-            menu.setCreatedBy(1L);
+            menu.setCreatedBy(Long.parseLong(m.get("userId").toString()));
             menuRepo.save(menu);
         }catch (Exception e){
             return GlobalResponse.dataGagalDisimpan("AUT02FE001",request);
@@ -70,6 +71,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
 
     @Override
     public ResponseEntity<Object> update(Long id, Menu menu, HttpServletRequest request) {//011-020
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(id == null){
                 return GlobalResponse.objectIsNull("AUT02FV011",request);
@@ -85,7 +87,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
             menuDB.setNama(menu.getNama());
             menuDB.setDeskripsi(menu.getDeskripsi());
             menuDB.setPath(menu.getPath());
-            menuDB.setModifiedBy(1L);
+            menuDB.setModifiedBy(Long.parseLong(m.get("userId").toString()));
 
         }catch (Exception e){
             return GlobalResponse.dataGagalDiubah("AUT02FE011",request);
@@ -95,6 +97,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
 
     @Override
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {//021-030
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(id==null){
                 return GlobalResponse.objectIsNull("AUT02FV021",request);
@@ -176,6 +179,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
 
     @Override
     public ResponseEntity<Object> uploadDataExcel(MultipartFile multipartFile, HttpServletRequest request) {//061-070
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         String message = "";
         try{
             if(!ExcelReader.hasWorkBookFormat(multipartFile)){
@@ -185,7 +189,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
             if(lt.isEmpty()){
                 return GlobalResponse.fileExcelKosong("AUT02FV062",request);
             }
-            menuRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
+            menuRepo.saveAll(convertListWorkBookToListEntity(lt,Long.parseLong(m.get("userId").toString())));
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT02FE061",request);
         }

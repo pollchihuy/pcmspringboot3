@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/** Response Body untuk masalah Bisnis Logic dan Status Berhasil */
 public class ResponseHandler {
 
     public ResponseEntity<Object> handleResponse(

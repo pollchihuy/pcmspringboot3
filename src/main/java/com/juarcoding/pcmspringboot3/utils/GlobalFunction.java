@@ -1,6 +1,10 @@
 package com.juarcoding.pcmspringboot3.utils;
 
+import com.juarcoding.pcmspringboot3.config.JwtConfig;
 import com.juarcoding.pcmspringboot3.config.OtherConfig;
+import com.juarcoding.pcmspringboot3.security.Crypto;
+import com.juarcoding.pcmspringboot3.security.JwtUtility;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +50,15 @@ public class GlobalFunction {
         if(OtherConfig.getEnablePrintConsole().equals("y")){
             System.out.println(o);
         }
+    }
+
+    public static Map<String,Object> extractToken(HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        token = token.substring(7);
+        if(JwtConfig.getTokenEncryptEnable().equals("y")){
+            token = Crypto.performDecrypt(token);
+        }
+        return new JwtUtility().mappingBodyToken(token);
     }
 
 

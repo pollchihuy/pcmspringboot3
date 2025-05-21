@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerMapping;
@@ -20,28 +21,27 @@ import org.springframework.web.servlet.HandlerMapping;
 @RequestMapping("akses")
 public class AksesController {
 
-
     @Autowired
     private AksesService aksesService;
-    @Qualifier("resourceHandlerMapping")
-    @Autowired
-    private HandlerMapping resourceHandlerMapping;
-
 
     @PostMapping
+    @PreAuthorize("hasAuthority('Akses')")
     public ResponseEntity<Object> save(@Valid @RequestBody ValAksesDTO valAksesDTO,
                                        HttpServletRequest request){
         return aksesService.save(aksesService.mapToAkses(valAksesDTO),request);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('Akses')")
     public ResponseEntity<Object> update(@Valid @RequestBody ValAksesDTO valAksesDTO,
                                        @PathVariable Long id,
                                        HttpServletRequest request){
         return aksesService.update(id, aksesService.mapToAkses(valAksesDTO),request);
     }
 
+    /** RWX -> Read Write Execution */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('Akses')")
     public ResponseEntity<Object> delete(@PathVariable Long id,
                                          HttpServletRequest request){
         return aksesService.delete(id,request);
@@ -51,12 +51,14 @@ public class AksesController {
      * Ketika akses dibuka pertama kali, api yang di hit adalah api ini ....
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('Akses')")
     public ResponseEntity<Object> findAll(HttpServletRequest request){
         Pageable pageable = PageRequest.of(0, OtherConfig.getDefaultPaginationSize(), Sort.by("id"));
         return aksesService.findAll(pageable,request);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('Akses')")
     public ResponseEntity<Object> findById(
             @PathVariable Long id,
             HttpServletRequest request){
@@ -64,6 +66,7 @@ public class AksesController {
     }
 
     @GetMapping("/{sort}/{sort-by}/{page}")
+    @PreAuthorize("hasAuthority('Akses')")
     public ResponseEntity<Object> findByParam(
             @PathVariable String sort,
             @PathVariable(value = "sort-by") String sortBy,
@@ -82,11 +85,13 @@ public class AksesController {
     }
 
     @PostMapping("/upload-excel")
+    @PreAuthorize("hasAuthority('Akses')")
     public ResponseEntity<Object> uploadExcel(@RequestParam MultipartFile file, HttpServletRequest request){
         return aksesService.uploadDataExcel(file,request);
     }
 
     @GetMapping("/download-excel")
+    @PreAuthorize("hasAuthority('Akses')")
     public void downloadExcel(@RequestParam String column,
             @RequestParam String value,
             HttpServletRequest request,
@@ -95,6 +100,7 @@ public class AksesController {
     }
 
     @GetMapping("/download-pdf")
+    @PreAuthorize("hasAuthority('Akses')")
     public void downloadPdf(@RequestParam String column,
                               @RequestParam String value,
                               HttpServletRequest request,

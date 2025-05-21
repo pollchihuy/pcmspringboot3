@@ -56,11 +56,12 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
 
     @Override
     public ResponseEntity<Object> save(Akses akses, HttpServletRequest request) {//001-010
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(akses == null){
                 return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT03FV001",request);
             }
-            akses.setCreatedBy(1L);
+            akses.setCreatedBy(Long.parseLong(m.get("userId").toString()));
             aksesRepo.save(akses);
         }catch (Exception e){
             return GlobalResponse.dataGagalDisimpan("AUT03FE001",request);
@@ -70,6 +71,7 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
 
     @Override
     public ResponseEntity<Object> update(Long id, Akses akses, HttpServletRequest request) {//011-020
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(id == null){
                 return GlobalResponse.objectIsNull("AUT03FV011",request);
@@ -85,7 +87,7 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
             aksesDB.setNama(akses.getNama());
             aksesDB.setDeskripsi(akses.getDeskripsi());
             aksesDB.setListMenu(akses.getListMenu());
-            aksesDB.setModifiedBy(1L);
+            aksesDB.setModifiedBy(Long.parseLong(m.get("userId").toString()));
 
         }catch (Exception e){
             return GlobalResponse.dataGagalDiubah("AUT03FE011",request);
@@ -95,6 +97,7 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
 
     @Override
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {//021-030
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(id==null){
                 return GlobalResponse.objectIsNull("AUT03FV021",request);
@@ -176,6 +179,7 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
     @Override
     public ResponseEntity<Object> uploadDataExcel(MultipartFile multipartFile, HttpServletRequest request) {//061-070
         String message = "";
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(!ExcelReader.hasWorkBookFormat(multipartFile)){
                 return GlobalResponse.formatHarusExcel("AUT03FV061",request);
@@ -184,7 +188,7 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
             if(lt.isEmpty()){
                 return GlobalResponse.fileExcelKosong("AUT03FV062",request);
             }
-            aksesRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
+            aksesRepo.saveAll(convertListWorkBookToListEntity(lt,Long.parseLong(m.get("userId").toString())));
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT03FE061",request);
         }

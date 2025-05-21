@@ -11,17 +11,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * class untuk fungsional Json Web Token
+ */
 @Component
 public class JwtUtility {
 
+    /** variable untuk menentukan OK */
+    private String ok;
+
+    /** variable untuk menentukan OK */
     public Map<String, Object> mappingBodyToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
         Map<String, Object> map = new HashMap<>();
-        map.put("userId", claims.get("userId"));
+        map.put("userId", claims.get("id"));
         map.put("username", claims.getSubject());
-        map.put("noHp", claims.get("noHp"));
-        map.put("namaLengkap", claims.get("namaLengkap"));
-        map.put("email", claims.get("email"));
+        map.put("noHp", claims.get("hp"));
+        map.put("namaLengkap", claims.get("naleng"));
+        map.put("email", claims.get("em"));
         return map;
     }
 

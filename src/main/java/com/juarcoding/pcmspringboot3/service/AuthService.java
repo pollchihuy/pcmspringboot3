@@ -3,11 +3,13 @@ package com.juarcoding.pcmspringboot3.service;
 
 import com.juarcoding.pcmspringboot3.config.JwtConfig;
 import com.juarcoding.pcmspringboot3.config.OtherConfig;
-import com.juarcoding.pcmspringboot3.core.SMTPCore;
+import com.juarcoding.pcmspringboot3.dto.MenuLoginDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.LoginDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.RegisDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.VerifyRegisDTO;
 import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
+import com.juarcoding.pcmspringboot3.model.Akses;
+import com.juarcoding.pcmspringboot3.model.Menu;
 import com.juarcoding.pcmspringboot3.model.User;
 import com.juarcoding.pcmspringboot3.repo.UserRepo;
 import com.juarcoding.pcmspringboot3.security.BcryptImpl;
@@ -21,16 +23,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.AuthenticationException;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Kode Platform / Aplikasi : 001 atau AUT
@@ -39,7 +38,7 @@ import java.util.Random;
  */
 @Service
 @Transactional
-public class AuthService {
+public class AuthService implements UserDetailsService {
 
     @Autowired
     private UserRepo userRepo;
@@ -65,6 +64,11 @@ public class AuthService {
             int otp = random.nextInt(100000,999999);
             user.setOtp(BcryptImpl.hash(String.valueOf(otp)));
             user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
+            /** Default Akses untuk New member */
+            Akses akses = new Akses();
+            akses.setId(2L);
+            user.setAkses(akses);
+
             userRepo.save(user);
             if(OtherConfig.getEnableAutomationTesting().equals("y")){
                 m.put("otp",otp);// ini untuk automation
@@ -99,7 +103,7 @@ public class AuthService {
             }
             userNext.setRegistered(true);
             userNext.setModifiedBy(userNext.getId());
-            userNext.setOtp(String.valueOf(otp));
+            userNext.setOtp(BcryptImpl.hash(String.valueOf(otp)));
         }catch (Exception e){
             LoggingFile.logException("AuthService","verifyRegis(User user, HttpServletRequest request)"+ RequestCapture.allRequest(request),e);
 
@@ -115,7 +119,7 @@ public class AuthService {
         User userNext = null;
         try{
             String username = user.getUsername();
-            Optional<User> opUser = userRepo.findByUsernameOrEmailOrNoHp(username,username,username);
+            Optional<User> opUser = userRepo.findByUsernameOrEmailOrNoHpAndIsRegistered(username,username,username,true);
             if(!opUser.isPresent()) {
                 return new ResponseHandler().handleResponse("User Tidak Ditemukan",HttpStatus.BAD_REQUEST,null,"AUT00FV021",request);
             }
@@ -133,14 +137,14 @@ public class AuthService {
         }
 
         Map<String,Object> mapData = new HashMap<>();
-        mapData.put("email",userNext.getEmail());
-        mapData.put("noHp",userNext.getNoHp());
-        mapData.put("namaLengkap",userNext.getNamaLengkap());
-        mapData.put("password",userNext.getPassword());
-        mapData.put("tanggalLahir",userNext.getTanggalLahir().toString());
-
+        mapData.put("em",userNext.getEmail());
+        mapData.put("id",userNext.getId());
+        mapData.put("hp",userNext.getNoHp());
+        mapData.put("naleng",userNext.getNamaLengkap());
+        List<MenuLoginDTO> menu = mapToMenuLoginDTO(userNext.getAkses().getListMenu());
         String token = jwtUtility.doGenerateToken(mapData,userNext.getUsername());
-        m.put("menu","sama aja nanti di security");
+
+        m.put("menu",menu);
         if(JwtConfig.getTokenEncryptEnable().equals("y")){
             token = Crypto.performEncrypt(token);
         }
@@ -149,7 +153,17 @@ public class AuthService {
         return new ResponseHandler().handleResponse("Login Berhasil !!",HttpStatus.OK,m,null,request);
     }
 
-//    public User mapToUser(RegisDTO regisDTO) {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> opUser = userRepo.findByUsernameAndIsRegistered(username,true);
+        if(!opUser.isPresent()) {
+            throw new UsernameNotFoundException("Username atau Password Salah !!!");
+        }
+        User user = opUser.get();
+        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),user.getAuthorities());
+    }
+
+    //    public User mapToUser(RegisDTO regisDTO) {
 //        User user = new User();
 //        user.setEmail(regisDTO.getEmail());
 //        user.setNoHp(regisDTO.getNoHp());
@@ -189,5 +203,18 @@ public class AuthService {
 
     public User mapToUser(LoginDTO loginDTO) {
         return modelMapper.map(loginDTO, User.class);
+    }
+
+    public List<MenuLoginDTO> mapToMenuLoginDTO(List<Menu> ltMenu){
+        List<MenuLoginDTO> ltMenuDTO = new ArrayList<>();
+        for (Menu menu : ltMenu) {
+            MenuLoginDTO menuDTO = new MenuLoginDTO();
+            menuDTO.setNama(menu.getNama());
+            menuDTO.setPath(menu.getPath());
+            menuDTO.setNamaGroupMenu(menu.getGroupMenu().getNama());
+            ltMenuDTO.add(menuDTO);
+        }
+
+        return ltMenuDTO;
     }
 }

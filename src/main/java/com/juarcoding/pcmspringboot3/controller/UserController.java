@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerMapping;
@@ -20,21 +21,20 @@ import org.springframework.web.servlet.HandlerMapping;
 @RequestMapping("user")
 public class UserController {
 
-
     @Autowired
     private UserService userService;
     @Qualifier("resourceHandlerMapping")
-    @Autowired
-    private HandlerMapping resourceHandlerMapping;
 
 
     @PostMapping
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> save(@Valid @RequestBody ValUserDTO valUserDTO,
                                        HttpServletRequest request){
         return userService.save(userService.mapToUser(valUserDTO),request);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> update(@Valid @RequestBody ValUserDTO valUserDTO,
                                        @PathVariable Long id,
                                        HttpServletRequest request){
@@ -42,6 +42,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> delete(@PathVariable Long id,
                                          HttpServletRequest request){
         return userService.delete(id,request);
@@ -51,12 +52,14 @@ public class UserController {
      * Ketika menu dibuka pertama kali, api yang di hit adalah api ini ....
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> findAll(HttpServletRequest request){
         Pageable pageable = PageRequest.of(0, OtherConfig.getDefaultPaginationSize(), Sort.by("id"));
         return userService.findAll(pageable,request);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> findById(
             @PathVariable Long id,
             HttpServletRequest request){
@@ -64,6 +67,7 @@ public class UserController {
     }
 
     @GetMapping("/{sort}/{sort-by}/{page}")
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> findByParam(
             @PathVariable String sort,
             @PathVariable(value = "sort-by") String sortBy,
@@ -82,11 +86,13 @@ public class UserController {
     }
 
     @PostMapping("/upload-excel")
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> uploadExcel(@RequestParam MultipartFile file, HttpServletRequest request){
         return userService.uploadDataExcel(file,request);
     }
 
     @GetMapping("/download-excel")
+    @PreAuthorize("hasAuthority('User')")
     public void downloadExcel(@RequestParam String column,
             @RequestParam String value,
             HttpServletRequest request,
@@ -95,6 +101,7 @@ public class UserController {
     }
 
     @GetMapping("/download-pdf")
+    @PreAuthorize("hasAuthority('User')")
     public void downloadPdf(@RequestParam String column,
                               @RequestParam String value,
                               HttpServletRequest request,

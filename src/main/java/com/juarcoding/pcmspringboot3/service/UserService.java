@@ -58,12 +58,13 @@ public class UserService implements IService<User>, IReport<User> {
 
     @Override
     public ResponseEntity<Object> save(User user, HttpServletRequest request) {//001-010
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(user == null){
                 return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT04FV001",request);
             }
             user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
-            user.setCreatedBy(1L);
+            user.setCreatedBy(Long.parseLong(m.get("userId").toString()));
             userRepo.save(user);
         }catch (Exception e){
             return GlobalResponse.dataGagalDisimpan("AUT04FE001",request);
@@ -73,6 +74,7 @@ public class UserService implements IService<User>, IReport<User> {
 
     @Override
     public ResponseEntity<Object> update(Long id, User user, HttpServletRequest request) {//011-020
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(id == null){
                 return GlobalResponse.objectIsNull("AUT04FV011",request);
@@ -91,7 +93,7 @@ public class UserService implements IService<User>, IReport<User> {
             userDB.setEmail(user.getEmail());
             userDB.setTanggalLahir(user.getTanggalLahir());
             userDB.setAkses(user.getAkses());
-            userDB.setModifiedBy(1L);
+            userDB.setModifiedBy(Long.parseLong(m.get("userId").toString()));
 
         }catch (Exception e){
             return GlobalResponse.dataGagalDiubah("AUT04FE011",request);
@@ -101,6 +103,7 @@ public class UserService implements IService<User>, IReport<User> {
 
     @Override
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {//021-030
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(id==null){
                 return GlobalResponse.objectIsNull("AUT04FV021",request);
@@ -185,6 +188,7 @@ public class UserService implements IService<User>, IReport<User> {
     @Override
     public ResponseEntity<Object> uploadDataExcel(MultipartFile multipartFile, HttpServletRequest request) {//061-070
         String message = "";
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(!ExcelReader.hasWorkBookFormat(multipartFile)){
                 return GlobalResponse.formatHarusExcel("AUT04FV061",request);
@@ -193,11 +197,10 @@ public class UserService implements IService<User>, IReport<User> {
             if(lt.isEmpty()){
                 return GlobalResponse.fileExcelKosong("AUT04FV062",request);
             }
-            userRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
+            userRepo.saveAll(convertListWorkBookToListEntity(lt,Long.parseLong(m.get("userId").toString())));
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT04FE061",request);
         }
-
         return GlobalResponse.uploadFileExcelBerhasil(request);
     }
 

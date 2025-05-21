@@ -57,11 +57,12 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
 
     @Override
     public ResponseEntity<Object> save(GroupMenu groupMenu, HttpServletRequest request) {//001-010
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(groupMenu == null){
                 return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT01FV001",request);
             }
-            groupMenu.setCreatedBy(1L);
+            groupMenu.setCreatedBy(Long.parseLong(m.get("userId").toString()));
             groupMenuRepo.save(groupMenu);
         }catch (Exception e){
             return GlobalResponse.dataGagalDisimpan("AUT01FE001",request);
@@ -71,6 +72,7 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
 
     @Override
     public ResponseEntity<Object> update(Long id, GroupMenu groupMenu, HttpServletRequest request) {//011-020
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(id == null){
                 return GlobalResponse.objectIsNull("AUT01FV011",request);
@@ -95,6 +97,7 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
 
     @Override
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {//021-030
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(id==null){
                 return GlobalResponse.objectIsNull("AUT01FV021",request);
@@ -176,6 +179,7 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
     @Override
     public ResponseEntity<Object> uploadDataExcel(MultipartFile multipartFile, HttpServletRequest request) {//061-070
         String message = "";
+        Map<String,Object> m = GlobalFunction.extractToken(request);
         try{
             if(!ExcelReader.hasWorkBookFormat(multipartFile)){
                 return GlobalResponse.formatHarusExcel("AUT01FV061",request);
@@ -184,7 +188,7 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
             if(lt.isEmpty()){
                 return GlobalResponse.fileExcelKosong("AUT01FV062",request);
             }
-            groupMenuRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
+            groupMenuRepo.saveAll(convertListWorkBookToListEntity(lt,Long.parseLong(m.get("userId").toString())));
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT01FE061",request);
         }

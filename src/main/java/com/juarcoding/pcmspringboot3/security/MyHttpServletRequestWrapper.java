@@ -1,4 +1,4 @@
-package com.juarcoding.pcmspringboot3.core;
+package com.juarcoding.pcmspringboot3.security;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;

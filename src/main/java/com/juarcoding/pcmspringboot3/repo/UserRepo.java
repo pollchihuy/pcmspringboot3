@@ -14,7 +14,9 @@ public interface UserRepo extends JpaRepository<User, Long> {
     // SELECT x.* FROM MstUser x WHERE x.Email = ?
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
+    Optional<User> findByUsernameAndIsRegistered(String username, Boolean valid);
     Optional<User> findByUsernameOrEmailOrNoHp(String username,String email,String noHp);
+    Optional<User> findByUsernameOrEmailOrNoHpAndIsRegistered(String username, String email, String noHp, Boolean valid);
 
     public Page<User> findByNamaLengkapContainsIgnoreCase(String nama, Pageable pageable);
     public Page<User> findByAlamatContainsIgnoreCase(String nama, Pageable pageable);
