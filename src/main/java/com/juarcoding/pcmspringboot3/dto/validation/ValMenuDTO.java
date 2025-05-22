@@ -20,7 +20,6 @@ public class ValMenuDTO {
 
     @NotNull(message = "Path Tidak Boleh Null")
     @Pattern(regexp = "^[a-z\\/\\-]{5,50}$",message = "Path Tidak Valid huruf kecil , hyphen dan slash Min 5 Max 50 , ex : /group-menu")
-
     private String path;
 
     @NotNull(message = "Deskripsi Tidak Boleh Null")

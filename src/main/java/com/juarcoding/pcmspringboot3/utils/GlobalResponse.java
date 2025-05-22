@@ -58,7 +58,7 @@ public class GlobalResponse {
         return new ResponseHandler().handleResponse("FILE EXCEL KOSONG", HttpStatus.BAD_REQUEST,null,errorCode,request);
     }
     public static ResponseEntity<Object> uploadFileExcelBerhasil(HttpServletRequest request){
-        return new ResponseHandler().handleResponse("UPLOAD FILE EXCEL BERHASIL", HttpStatus.OK,null,null,request);
+        return new ResponseHandler().handleResponse("UPLOAD FILE EXCEL BERHASIL", HttpStatus.CREATED,null,null,request);
     }
 
     public static void manualResponse(HttpServletResponse response, ResponseEntity<Object> resObject){

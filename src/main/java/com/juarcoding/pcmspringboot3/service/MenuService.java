@@ -130,7 +130,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT02FE031",request);
         }
-        return GlobalResponse.dataDitemukan(listDTO,request);
+        return GlobalResponse.dataDitemukan(data,request);
     }
 
     @Override
@@ -174,7 +174,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT02FE051",request);
         }
-        return GlobalResponse.dataDitemukan(listDTO,request);
+        return GlobalResponse.dataDitemukan(data,request);
     }
 
     @Override

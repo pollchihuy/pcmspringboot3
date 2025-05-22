@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface GroupMenuRepo extends JpaRepository<GroupMenu, Long> {
@@ -16,4 +17,6 @@ public interface GroupMenuRepo extends JpaRepository<GroupMenu, Long> {
 
     public List<GroupMenu> findByNamaContainsIgnoreCase(String nama);
     public List<GroupMenu> findByDeskripsiContainsIgnoreCase(String nama);
+
+    public Optional<GroupMenu> findTop1ByOrderByIdDesc();
 }

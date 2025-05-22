@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MenuRepo extends JpaRepository<Menu, Long> {
 
@@ -19,4 +20,6 @@ public interface MenuRepo extends JpaRepository<Menu, Long> {
     public List<Menu> findByNamaContainsIgnoreCase(String nama);
     public List<Menu> findByPathContainsIgnoreCase(String nama);
     public List<Menu> findByDeskripsiContainsIgnoreCase(String nama);
+
+    public Optional<Menu> findTop1ByOrderByIdDesc();
 }

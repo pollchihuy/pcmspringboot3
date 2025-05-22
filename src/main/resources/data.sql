@@ -5,6 +5,8 @@ SET IDENTITY_INSERT [projectz].[MstGroupMenu] ON
 
 INSERT INTO [projectz].[MstGroupMenu] ([CreatedBy], [CreatedDate], [ID], [ModifiedBy], [ModifiedDate], [Nama], [Deskripsi]) VALUES (N'1', N'2025-05-21 20:46:18.000000', N'2', NULL, NULL, N'Artikel', N'Untuk Artikel aneh aneh')
 ;
+INSERT INTO [projectz].[MstGroupMenu] ([CreatedBy], [CreatedDate], [ID], [ModifiedBy], [ModifiedDate], [Nama], [Deskripsi]) VALUES (N'1', N'2025-05-21 20:46:18.000000', N'3', NULL, NULL, N'Buat Delete', N'Buat Delete Doank Sih ....')
+;
 
 SET IDENTITY_INSERT [projectz].[MstGroupMenu] OFF
 ;
@@ -31,6 +33,9 @@ INSERT INTO [projectz].[MstMenu] ([CreatedBy], [CreatedDate], [ID], [IDGroupMenu
 INSERT INTO [projectz].[MstMenu] ([CreatedBy], [CreatedDate], [ID], [IDGroupMenu], [ModifiedBy], [ModifiedDate], [Nama], [Path], [Deskripsi]) VALUES (N'1', N'2025-05-21 20:46:18.000000', N'6', N'2', NULL, NULL, N'Artikel-2', N'/artikel-2', N'Untuk Konfigurasi Artikel 2')
 ;
 
+INSERT INTO [projectz].[MstMenu] ([CreatedBy], [CreatedDate], [ID], [IDGroupMenu], [ModifiedBy], [ModifiedDate], [Nama], [Path], [Deskripsi]) VALUES (N'1', N'2025-05-21 20:46:18.000000', N'7', N'2', NULL, NULL, N'Artikel-3', N'/artikel-3', N'Untuk Konfigurasi Artikel 3')
+;
+
 SET IDENTITY_INSERT [projectz].[MstMenu] OFF
 ;
 
@@ -41,6 +46,9 @@ INSERT INTO [projectz].[MstAkses] ([CreatedBy], [CreatedDate], [ID], [ModifiedBy
 ;
 
 INSERT INTO [projectz].[MstAkses] ([CreatedBy], [CreatedDate], [ID], [ModifiedBy], [ModifiedDate], [Nama], [Deskripsi]) VALUES (N'1', N'2025-05-21 20:46:18.000000', N'2', NULL, NULL, N'Member', N'Untuk Member Setelah Registrasi')
+;
+
+INSERT INTO [projectz].[MstAkses] ([CreatedBy], [CreatedDate], [ID], [ModifiedBy], [ModifiedDate], [Nama], [Deskripsi]) VALUES (N'1', N'2025-05-21 20:46:18.000000', N'3', NULL, NULL, N'Member Test', N'Untuk Member Setelah Registrasi Testing aja')
 ;
 
 SET IDENTITY_INSERT [projectz].[MstAkses] OFF

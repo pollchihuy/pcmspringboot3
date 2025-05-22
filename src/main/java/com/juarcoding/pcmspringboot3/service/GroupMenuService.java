@@ -130,7 +130,7 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT01FE031",request);
         }
-        return GlobalResponse.dataDitemukan(listDTO,request);
+        return GlobalResponse.dataDitemukan(data,request);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT01FE051",request);
         }
-        return GlobalResponse.dataDitemukan(listDTO,request);
+        return GlobalResponse.dataDitemukan(data,request);
     }
 
     @Override
