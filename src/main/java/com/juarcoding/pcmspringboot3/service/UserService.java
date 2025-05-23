@@ -136,7 +136,7 @@ public class UserService implements IService<User>, IReport<User> {
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT04FE031",request);
         }
-        return GlobalResponse.dataDitemukan(listDTO,request);
+        return GlobalResponse.dataDitemukan(data,request);
     }
 
     @Override
@@ -172,6 +172,7 @@ public class UserService implements IService<User>, IReport<User> {
                 case "no-hp":page = userRepo.findByNoHpContainsIgnoreCase(value,pageable);break;
 //                case "tanggal-lahir":page = userRepo.findByTanggalLahirContainsIgnoreCase(value,pageable);break;
                 case "email":page = userRepo.findByEmailContainsIgnoreCase(value,pageable);break;
+                case "username":page = userRepo.findByUsernameContainsIgnoreCase(value,pageable);break;
                 default:page = userRepo.findAll(pageable);
             }
             if(page.isEmpty()){
@@ -182,7 +183,7 @@ public class UserService implements IService<User>, IReport<User> {
         }catch (Exception e){
             return GlobalResponse.terjadiKesalahan("AUT04FE051",request);
         }
-        return GlobalResponse.dataDitemukan(listDTO,request);
+        return GlobalResponse.dataDitemukan(data,request);
     }
 
     @Override
@@ -232,6 +233,7 @@ public class UserService implements IService<User>, IReport<User> {
                 case "no-hp":listUser = userRepo.findByNoHpContainsIgnoreCase(value);break;
 //                case "tanggal-lahir":listUser = userRepo.findByTanggalLahirContainsIgnoreCase(value);break;
                 case "email":listUser = userRepo.findByEmailContainsIgnoreCase(value);break;
+                case "username":listUser = userRepo.findByUsernameContainsIgnoreCase(value);break;
                 default:listUser= userRepo.findAll();break;
             }
             if(listUser.isEmpty()){
@@ -287,6 +289,7 @@ public class UserService implements IService<User>, IReport<User> {
                 case "alamat":listUser = userRepo.findByAlamatContainsIgnoreCase(value);break;
                 case "no-hp":listUser = userRepo.findByNoHpContainsIgnoreCase(value);break;
 //                case "tanggal-lahir":listUser = userRepo.findByTanggalLahirContainsIgnoreCase(value);break;
+                case "username":listUser = userRepo.findByUsernameContainsIgnoreCase(value);break;
                 case "email":listUser = userRepo.findByEmailContainsIgnoreCase(value);break;
                 default:listUser= userRepo.findAll();break;
             }

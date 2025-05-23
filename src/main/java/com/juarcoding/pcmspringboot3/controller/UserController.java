@@ -112,6 +112,7 @@ public class UserController {
     private String sortColumn(String column){
         switch (column){
             case "nama-lengkap":column="nama-lengkap";break;
+            case "username":column="username";break;
             case "alamat":column="alamat";break;
             case "tanggal-lahir":column="tanggal-lahir";break;
             case "no-hp":column="no-hp";break;

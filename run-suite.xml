@@ -6,6 +6,7 @@
             <class name="com.juarcoding.pcmspringboot3.controller.AuthControllerTest"></class>
             <class name="com.juarcoding.pcmspringboot3.controller.GroupMenuControllerTest"></class>
             <class name="com.juarcoding.pcmspringboot3.controller.MenuControllerTest"></class>
+            <class name="com.juarcoding.pcmspringboot3.controller.AksesControllerTest"></class>
         </classes>
     </test>
 </suite>

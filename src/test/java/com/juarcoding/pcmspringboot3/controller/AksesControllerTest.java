@@ -1,10 +1,10 @@
 package com.juarcoding.pcmspringboot3.controller;
 
 import com.juarcoding.pcmspringboot3.config.OtherConfig;
-import com.juarcoding.pcmspringboot3.dto.rel.RelGroupMenuDTO;
-import com.juarcoding.pcmspringboot3.model.GroupMenu;
+import com.juarcoding.pcmspringboot3.dto.rel.RelMenuDTO;
+import com.juarcoding.pcmspringboot3.model.Akses;
 import com.juarcoding.pcmspringboot3.model.Menu;
-import com.juarcoding.pcmspringboot3.repo.MenuRepo;
+import com.juarcoding.pcmspringboot3.repo.AksesRepo;
 import com.juarcoding.pcmspringboot3.utils.DataGenerator;
 import com.juarcoding.pcmspringboot3.utils.TokenGenerator;
 import io.restassured.http.Method;
@@ -20,21 +20,18 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class MenuControllerTest extends AbstractTestNGSpringContextTests {
+public class AksesControllerTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
-    private MenuRepo menuRepo;
+    private AksesRepo aksesRepo;
 
     private JSONObject req;
-    private Menu menu;
+    private Akses akses;
     private Random rand ;
     private String token;
     private DataGenerator dataGenerator;
@@ -44,10 +41,10 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
         token = new TokenGenerator(AuthControllerTest.authorization).getToken();
         rand  = new Random();
         req = new JSONObject();
-        menu = new Menu();
+        akses = new Akses();
         dataGenerator = new DataGenerator();
-        Optional<Menu> op = menuRepo.findTop1ByOrderByIdDesc();
-        menu = op.get();
+        Optional<Akses> op = aksesRepo.findTop1ByOrderByIdDesc();
+        akses = op.get();
     }
 
     @BeforeTest
@@ -59,21 +56,24 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
     void save(){
         Response response ;
         String nama = dataGenerator.dataNamaTim();
-        String path = "/"+nama.toLowerCase().replace(" ","-");
         try{
             req.put("nama", nama);
-            req.put("path", path);
             req.put("deskripsi", "oijasoijdoainsoiuhbgiuhasdAAbb");
-            RelGroupMenuDTO group = new RelGroupMenuDTO();
-            group.setId(menu.getGroupMenu().getId());
-            req.put("group-menu",group);
+            List<RelMenuDTO> listMenu = new ArrayList<>();
+            for (Menu m:
+                 akses.getListMenu()) {
+                RelMenuDTO relMenuDTO = new RelMenuDTO();
+                relMenuDTO.setId(m.getId());
+                listMenu.add(relMenuDTO);
+            }
+            req.put("list-akses",listMenu);
 
             response = given().
                     header("Content-Type","application/json").
                     header("accept","*/*").
                     header(AuthControllerTest.AUTH_HEADER,token).
                     body(req).
-                    request(Method.POST,"menu");
+                    request(Method.POST,"akses");
 
             int intResponse = response.getStatusCode();
             JsonPath jsonPath = response.jsonPath();
@@ -95,30 +95,30 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
         try{
             String reqNama = dataGenerator.dataNamaTim();
             String reqDeskripsi = "oaiusdoiajdsoijaoijaojdsiadasdadsoaiusdoiajdsoijaoijaojdsiadasdads";
-            String reqPath = "/"+reqNama.toLowerCase().replace(" ","-");
-
-
-            RelGroupMenuDTO relGroupMenu = new RelGroupMenuDTO();
-            relGroupMenu.setId(menu.getGroupMenu().getId());
+            List<RelMenuDTO> listMenu = new ArrayList<>();
+            for (Menu m:
+                    akses.getListMenu()) {
+                RelMenuDTO relMenuDTO = new RelMenuDTO();
+                relMenuDTO.setId(m.getId());
+                listMenu.add(relMenuDTO);
+            }
 
             System.out.println("ReqNama : "+reqNama);
             System.out.println("ReqDeskripsi : "+reqNama);
-            menu.setNama(reqNama);
-            menu.setDeskripsi(reqDeskripsi);
-            menu.setPath(reqPath);
-            menu.setGroupMenu(menu.getGroupMenu());
+            akses.setNama(reqNama);
+            akses.setDeskripsi(reqDeskripsi);
+            akses.setListMenu(akses.getListMenu());
 
             req.put("nama", reqNama);
-            req.put("path", reqPath);
             req.put("deskripsi",reqDeskripsi);
-            req.put("group-menu", relGroupMenu);
+            req.put("list-menu", listMenu);
 
             response = given().
                     header("Content-Type","application/json").
                     header("accept","*/*").
                     header(AuthControllerTest.AUTH_HEADER,token).
                     body(req).
-                    request(Method.PUT,"menu/"+ menu.getId());
+                    request(Method.PUT,"akses/"+ akses.getId());
 
             int intResponse = response.getStatusCode();
             JsonPath jsonPath = response.jsonPath();
@@ -141,17 +141,16 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
                     header("Content-Type","application/json").
                     header("accept","*/*").
                     header(AuthControllerTest.AUTH_HEADER,token).
-                    request(Method.GET,"/menu/"+ menu.getId());
+                    request(Method.GET,"/akses/"+ akses.getId());
 
             int intResponse = response.getStatusCode();
             JsonPath jsonPath = response.jsonPath();
 //            System.out.println(response.getBody().prettyPrint());
             Assert.assertEquals(intResponse,200);
             Assert.assertEquals(jsonPath.getString("message"),"DATA DITEMUKAN");
-            Assert.assertEquals(Long.parseLong(jsonPath.getString("data.id")), menu.getId());
-            Assert.assertEquals(jsonPath.getString("data.nama"), menu.getNama());
-            Assert.assertEquals(jsonPath.getString("data.deskripsi"), menu.getDeskripsi());
-            Assert.assertEquals(jsonPath.getString("data.path"), menu.getPath());
+            Assert.assertEquals(Long.parseLong(jsonPath.getString("data.id")), akses.getId());
+            Assert.assertEquals(jsonPath.getString("data.nama"), akses.getNama());
+            Assert.assertEquals(jsonPath.getString("data.deskripsi"), akses.getDeskripsi());
             Assert.assertTrue(Boolean.parseBoolean(jsonPath.getString("success")));
             Assert.assertNotNull(jsonPath.getString("timestamp"));
         }catch (Exception e){
@@ -167,7 +166,7 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
                     header("Content-Type","application/json").
                     header("accept","*/*").
                     header(AuthControllerTest.AUTH_HEADER,token).
-                    request(Method.GET,"/menu/");
+                    request(Method.GET,"/akses/");
 
             int intResponse = response.getStatusCode();
             JsonPath jsonPath = response.jsonPath();
@@ -196,8 +195,8 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
     @Test(priority = 40)
     void findByParam(){
         Response response ;
-        String pathVariable = "/menu/asc/id/0";
-        String strValue = menu.getNama();
+        String pathVariable = "/akses/asc/id/0";
+        String strValue = akses.getNama();
 
         try{
             response = given().
@@ -232,9 +231,8 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
 // ======================================================================================================================================================
 
             Assert.assertEquals(map.get("nama"),strValue);
-            Assert.assertEquals(map.get("deskripsi"), menu.getDeskripsi());
-            Assert.assertEquals(map.get("path"), menu.getPath());
-            Assert.assertEquals(Long.parseLong(map.get("id").toString()), menu.getId());
+            Assert.assertEquals(map.get("deskripsi"), akses.getDeskripsi());
+            Assert.assertEquals(Long.parseLong(map.get("id").toString()), akses.getId());
 
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -249,9 +247,9 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
                     header("Content-Type","multipart/form-data").
                     header("accept","*/*").
                     header(AuthControllerTest.AUTH_HEADER,token).
-                    multiPart("file",new File(System.getProperty("user.dir")+"/src/test/resources/data-test/menu.xlsx"),
+                    multiPart("file",new File(System.getProperty("user.dir")+"/src/test/resources/data-test/akses.xlsx"),
                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").
-                    request(Method.POST,"menu/upload-excel");
+                    request(Method.POST,"akses/upload-excel");
 
             int intResponse = response.getStatusCode();
             JsonPath jsonPath = response.jsonPath();
@@ -273,8 +271,8 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
                     header("accept","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").
                     header(AuthControllerTest.AUTH_HEADER,token).
                     params("column","nama").
-                    params("value", menu.getNama()).
-                    request(Method.GET,"menu/download-excel");
+                    params("value", akses.getNama()).
+                    request(Method.GET,"akses/download-excel");
 
             int intResponse = response.getStatusCode();
             Assert.assertEquals(intResponse,200);
@@ -295,8 +293,8 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
                     header("accept","application/pdf").
                     header(AuthControllerTest.AUTH_HEADER,token).
                     params("column","nama").
-                    params("value", menu.getNama()).
-                    request(Method.GET,"menu/download-pdf");
+                    params("value", akses.getNama()).
+                    request(Method.GET,"akses/download-pdf");
 
             int intResponse = response.getStatusCode();
             Assert.assertEquals(intResponse,200);
@@ -316,7 +314,7 @@ public class MenuControllerTest extends AbstractTestNGSpringContextTests {
                     header("Content-Type","application/json").
                     header("accept","*/*").
                     header(AuthControllerTest.AUTH_HEADER,token).
-                    request(Method.DELETE,"/menu/"+ menu.getId());
+                    request(Method.DELETE,"/akses/"+ akses.getId());
 
             int intResponse = response.getStatusCode();
             JsonPath jsonPath = response.jsonPath();
