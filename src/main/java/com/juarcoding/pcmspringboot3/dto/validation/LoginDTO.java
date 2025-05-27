@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-public class LoginDTO {
+import java.io.Serializable;
+
+public class LoginDTO implements Serializable {
+    private final static long serialVersionUID = 1L;
 
     @NotNull(message = "Username Tidak Boleh Null")
     @NotBlank(message = "Username Tidak Boleh Blank")
@@ -16,6 +19,34 @@ public class LoginDTO {
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@_#\\-$])[\\w].{8,15}$",
             message = "Format Password Tidak Valid")
     private String password;
+
+    private String captcha;
+    private String hiddenCaptcha;
+    private String realCaptcha;
+
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
+
+    public String getHiddenCaptcha() {
+        return hiddenCaptcha;
+    }
+
+    public void setHiddenCaptcha(String hiddenCaptcha) {
+        this.hiddenCaptcha = hiddenCaptcha;
+    }
+
+    public String getRealCaptcha() {
+        return realCaptcha;
+    }
+
+    public void setRealCaptcha(String realCaptcha) {
+        this.realCaptcha = realCaptcha;
+    }
 
     public String getUsername() {
         return username;

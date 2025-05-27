@@ -42,9 +42,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginDTO loginDTO
             , HttpServletRequest request){
-
-//        GlobalFunction.printConsole("Username  : "+loginDTO.getUsername());
-//        GlobalFunction.printConsole("Password  : "+loginDTO.getPassword());
         return authService.login(authService.mapToUser(loginDTO),request);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<Object> tokenExpired(@Valid @RequestBody LoginDTO loginDTO
+            , HttpServletRequest request){
+        return authService.refreshToken(authService.mapToUser(loginDTO),request);
     }
 }

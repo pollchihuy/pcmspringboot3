@@ -153,6 +153,42 @@ public class AuthService implements UserDetailsService {
         return new ResponseHandler().handleResponse("Login Berhasil !!",HttpStatus.OK,m,null,request);
     }
 
+    public ResponseEntity<Object> refreshToken(User user, HttpServletRequest request) {
+        Map<String,Object> m = new HashMap<>();
+        User userNext = null;
+        try{
+            String username = user.getUsername();
+            Optional<User> opUser = userRepo.findByUsernameOrEmailOrNoHpAndIsRegistered(username,username,username,true);
+            if(!opUser.isPresent()) {
+                return new ResponseHandler().handleResponse("User Tidak Ditemukan",HttpStatus.BAD_REQUEST,null,"AUT00FV021",request);
+            }
+            userNext = opUser.get();//diambil dari DB
+
+            String pwdDB = userNext.getUsername()+user.getPassword();
+            if(!BcryptImpl.verifyHash(pwdDB,userNext.getPassword())) {
+                return new ResponseHandler().handleResponse("Username atau Password Salah !!",HttpStatus.BAD_REQUEST,null,"AUT00FV022",request);
+            }
+        }catch (Exception e){
+            LoggingFile.logException("AuthService","login(User user, HttpServletRequest request)"+ RequestCapture.allRequest(request),e);
+
+            return new ResponseHandler().handleResponse("Terjadi Kesalahan Pada Server",HttpStatus.INTERNAL_SERVER_ERROR,null,
+                    "AUT00FE021",request);
+        }
+
+        Map<String,Object> mapData = new HashMap<>();
+        mapData.put("em",userNext.getEmail());
+        mapData.put("id",userNext.getId());
+        mapData.put("hp",userNext.getNoHp());
+        mapData.put("naleng",userNext.getNamaLengkap());
+        String token = jwtUtility.doGenerateToken(mapData,userNext.getUsername());
+        if(JwtConfig.getTokenEncryptEnable().equals("y")){
+            token = Crypto.performEncrypt(token);
+        }
+        m.put("token", token);
+
+        return new ResponseHandler().handleResponse("Login Berhasil !!",HttpStatus.OK,m,null,request);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> opUser = userRepo.findByUsernameAndIsRegistered(username,true);
