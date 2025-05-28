@@ -159,6 +159,8 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
         Page<Akses> page = null;
         List<RepAksesDTO> listDTO = null;
         Map<String,Object> data = null;
+        Map<String,Object> m = GlobalFunction.extractToken(request);
+        String div = m.get("div").toString();
         try {
             switch (columnName){
                 case "nama":page = aksesRepo.findByNamaContainsIgnoreCase(value,pageable);break;

@@ -2,12 +2,10 @@ package com.juarcoding.pcmspringboot3.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class MenuLoginDTO {
+public class MenuMappingDTO {
 
     private String nama;
-
     private String path;
-
     @JsonIgnore
     private String namaGroupMenu;
 

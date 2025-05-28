@@ -13,6 +13,7 @@ public interface AksesRepo extends JpaRepository<Akses, Long> {
 
     public Page<Akses> findByNamaContainsIgnoreCase(String nama, Pageable pageable);
     public Page<Akses> findByDeskripsiContainsIgnoreCase(String nama, Pageable pageable);
+//    public Page<Akses> findByDeskripsiContainsIgnoreCaseAndDiv(String nama,String divisi, Pageable pageable);
 
     public List<Akses> findByNamaContainsIgnoreCase(String nama);
     public List<Akses> findByDeskripsiContainsIgnoreCase(String nama);

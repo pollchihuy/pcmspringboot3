@@ -6,10 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-import java.io.Serializable;
-
-public class LoginDTO implements Serializable {
-    private final static long serialVersionUID = 1L;
+public class LoginDTO {
 
     @NotNull(message = "Username Tidak Boleh Null")
     @NotBlank(message = "Username Tidak Boleh Blank")

@@ -59,4 +59,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> unexpectedRollbackException(UnexpectedRollbackException ex, HttpServletRequest request){
         return new ResponseHandler().handleResponse("Rollback untuk Transaksi Telah dilakukan",HttpStatus.BAD_REQUEST,null,"X0201",request);
     }
+
+    public ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, HttpServletRequest request) {
+        return new ResponseHandler().handleResponse("Terjadi Kesalahan Di Server",status,null,"X05999",request);
+    }
 }

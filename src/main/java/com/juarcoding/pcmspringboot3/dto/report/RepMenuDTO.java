@@ -12,12 +12,20 @@ public class RepMenuDTO {
     private String path;
 
     private String deskripsi;
+    private Long createdBy;
 
-//    private Long idGroupMenu;
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+        private Long idGroupMenu;
 
     private String namaGroupMenu;
 
-//    private String deskripsiGroupMenu;
+    private String deskripsiGroupMenu;
 
     public Long getId() {
         return id;
@@ -51,13 +59,13 @@ public class RepMenuDTO {
         this.deskripsi = deskripsi;
     }
 
-//    public Long getIdGroupMenu() {
-//        return idGroupMenu;
-//    }
+    public Long getIdGroupMenu() {
+        return idGroupMenu;
+    }
 
-//    public void setIdGroupMenu(Long idGroupMenu) {
-//        this.idGroupMenu = idGroupMenu;
-//    }
+    public void setIdGroupMenu(Long idGroupMenu) {
+        this.idGroupMenu = idGroupMenu;
+    }
 
     public String getNamaGroupMenu() {
         return namaGroupMenu;
@@ -67,11 +75,11 @@ public class RepMenuDTO {
         this.namaGroupMenu = namaGroupMenu;
     }
 
-//    public String getDeskripsiGroupMenu() {
-//        return deskripsiGroupMenu;
-//    }
-//
-//    public void setDeskripsiGroupMenu(String deskripsiGroupMenu) {
-//        this.deskripsiGroupMenu = deskripsiGroupMenu;
-//    }
+    public String getDeskripsiGroupMenu() {
+        return deskripsiGroupMenu;
+    }
+
+    public void setDeskripsiGroupMenu(String deskripsiGroupMenu) {
+        this.deskripsiGroupMenu = deskripsiGroupMenu;
+    }
 }

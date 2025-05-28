@@ -18,6 +18,7 @@ import com.juarcoding.pcmspringboot3.security.JwtUtility;
 import com.juarcoding.pcmspringboot3.utils.LoggingFile;
 import com.juarcoding.pcmspringboot3.utils.RequestCapture;
 import com.juarcoding.pcmspringboot3.utils.SendMailOTP;
+import com.juarcoding.pcmspringboot3.utils.TransformationDataMenu;
 import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,11 +141,12 @@ public class AuthService implements UserDetailsService {
         mapData.put("em",userNext.getEmail());
         mapData.put("id",userNext.getId());
         mapData.put("hp",userNext.getNoHp());
+//        mapData.put("div",userNext.getDivisi());
         mapData.put("naleng",userNext.getNamaLengkap());
         List<MenuLoginDTO> menu = mapToMenuLoginDTO(userNext.getAkses().getListMenu());
         String token = jwtUtility.doGenerateToken(mapData,userNext.getUsername());
 
-        m.put("menu",menu);
+        m.put("menu",new TransformationDataMenu().doTransformAksesMenuLogin(menu));
         if(JwtConfig.getTokenEncryptEnable().equals("y")){
             token = Crypto.performEncrypt(token);
         }
