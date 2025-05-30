@@ -82,8 +82,8 @@ public class GroupMenuController {
         Pageable pageable = null;
         sortBy = sortColumn(sortBy);
         switch (sort) {
-            case "desc":pageable = PageRequest.of(page,size, Sort.by("id").descending());break;
-            default:pageable = PageRequest.of(page,size, Sort.by("id"));break;
+            case "desc":pageable = PageRequest.of(page,size, Sort.by(sortBy).descending());break;
+            default:pageable = PageRequest.of(page,size, Sort.by(sortBy));break;
         }
         return groupMenuService.findByParam(pageable,column,value,request);
     }

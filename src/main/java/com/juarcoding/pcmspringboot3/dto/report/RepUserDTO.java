@@ -2,7 +2,12 @@ package com.juarcoding.pcmspringboot3.dto.report;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.juarcoding.pcmspringboot3.dto.rel.RelAksesDTO;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -14,20 +19,26 @@ public class RepUserDTO {
 
     private String email;
 
-    @JsonProperty("no-hp")
     private String noHp;
 
-    private String password;
-
-    @JsonProperty("nama-lengkap")
     private String namaLengkap;
 
     private String alamat;
 
-    private LocalDate tanggalLahir;
+
+    private String tanggalLahir;
 
     private String namaAkses;
 
+    private Integer umur;
+
+    public Integer getUmur() {
+        return umur;
+    }
+
+    public void setUmur(Integer umur) {
+        this.umur = umur;
+    }
 
     public Long getId() {
         return id;
@@ -69,13 +80,6 @@ public class RepUserDTO {
         this.noHp = noHp;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getNamaLengkap() {
         return namaLengkap;
@@ -93,11 +97,11 @@ public class RepUserDTO {
         this.alamat = alamat;
     }
 
-    public LocalDate getTanggalLahir() {
+    public String getTanggalLahir() {
         return tanggalLahir;
     }
 
-    public void setTanggalLahir(LocalDate tanggalLahir) {
+    public void setTanggalLahir(String tanggalLahir) {
         this.tanggalLahir = tanggalLahir;
     }
 }

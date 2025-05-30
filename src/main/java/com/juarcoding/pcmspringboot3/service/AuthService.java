@@ -143,6 +143,7 @@ public class AuthService implements UserDetailsService {
         mapData.put("hp",userNext.getNoHp());
 //        mapData.put("div",userNext.getDivisi());
         mapData.put("naleng",userNext.getNamaLengkap());
+//        mapData.put("depId",userNext.getDepartment().getId());
         List<MenuLoginDTO> menu = mapToMenuLoginDTO(userNext.getAkses().getListMenu());
         String token = jwtUtility.doGenerateToken(mapData,userNext.getUsername());
 

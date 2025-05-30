@@ -14,6 +14,7 @@ import com.juarcoding.pcmspringboot3.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -172,6 +174,8 @@ public class UserService implements IService<User>, IReport<User> {
                 case "no-hp":page = userRepo.findByNoHpContainsIgnoreCase(value,pageable);break;
 //                case "tanggal-lahir":page = userRepo.findByTanggalLahirContainsIgnoreCase(value,pageable);break;
                 case "email":page = userRepo.findByEmailContainsIgnoreCase(value,pageable);break;
+                case "akses":page = userRepo.cariAkses(value,pageable);break;
+                case "umur":page = userRepo.cariUmur(value,pageable);break;
                 case "username":page = userRepo.findByUsernameContainsIgnoreCase(value,pageable);break;
                 default:page = userRepo.findAll(pageable);
             }
@@ -234,6 +238,8 @@ public class UserService implements IService<User>, IReport<User> {
 //                case "tanggal-lahir":listUser = userRepo.findByTanggalLahirContainsIgnoreCase(value);break;
                 case "email":listUser = userRepo.findByEmailContainsIgnoreCase(value);break;
                 case "username":listUser = userRepo.findByUsernameContainsIgnoreCase(value);break;
+                case "akses":listUser = userRepo.cariAkses(value);break;
+                case "umur":listUser = userRepo.cariUmur(value);break;
                 default:listUser= userRepo.findAll();break;
             }
             if(listUser.isEmpty()){
@@ -291,6 +297,8 @@ public class UserService implements IService<User>, IReport<User> {
 //                case "tanggal-lahir":listUser = userRepo.findByTanggalLahirContainsIgnoreCase(value);break;
                 case "username":listUser = userRepo.findByUsernameContainsIgnoreCase(value);break;
                 case "email":listUser = userRepo.findByEmailContainsIgnoreCase(value);break;
+                case "akses":listUser = userRepo.cariAkses(value);break;
+                case "umur":listUser = userRepo.cariUmur(value);break;
                 default:listUser= userRepo.findAll();break;
             }
             if(listUser.isEmpty()){
@@ -342,7 +350,24 @@ public class UserService implements IService<User>, IReport<User> {
     }
 
     public List<RepUserDTO> mapToDTO(List<User> listUser){
-        return modelMapper.map(listUser,new TypeToken<List<RepUserDTO>>(){}.getType());
+//        return modelMapper.map(listUser,new TypeToken<List<RepUserDTO>>(){}.getType());
+        List<RepUserDTO> ltRepUserDTO = new ArrayList<>();
+        RepUserDTO repUserDTO = null;
+        for(User user : listUser){
+            repUserDTO = new RepUserDTO();
+            repUserDTO.setId(user.getId());
+            repUserDTO.setNamaAkses(user.getAkses()==null?"":user.getAkses().getNama());
+            repUserDTO.setNoHp(user.getNoHp());
+            repUserDTO.setAlamat(user.getAlamat());
+//            repUserDTO.setPassword(user.getPassword());
+            repUserDTO.setEmail(user.getEmail());
+            repUserDTO.setUsername(user.getUsername());
+            repUserDTO.setNamaLengkap(user.getNamaLengkap());
+            repUserDTO.setUmur(user.getUmur());
+            repUserDTO.setTanggalLahir(user.getTanggalLahir().format(DateTimeFormatter.ISO_DATE.ofPattern("dd LLLL yyyy")));
+            ltRepUserDTO.add(repUserDTO);
+        }
+        return ltRepUserDTO;
     }
 
     public ResUserDTO mapToDTO(User user){
