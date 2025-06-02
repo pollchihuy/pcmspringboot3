@@ -164,6 +164,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
                 case "nama":page = menuRepo.findByNamaContainsIgnoreCase(value,pageable);break;
                 case "deskripsi":page = menuRepo.findByDeskripsiContainsIgnoreCase(value,pageable);break;
                 case "path":page = menuRepo.findByPathContainsIgnoreCase(value,pageable);break;
+                case "group":page = menuRepo.cariGroup(value,pageable);break;
                 default:page = menuRepo.findAll(pageable);
             }
             if(page.isEmpty()){
@@ -221,6 +222,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
                 case "nama" : listMenu = menuRepo.findByNamaContainsIgnoreCase(value);break;
                 case "deskripsi" : listMenu = menuRepo.findByDeskripsiContainsIgnoreCase(value);break;
                 case "path" : listMenu = menuRepo.findByPathContainsIgnoreCase(value);break;
+                case "group":listMenu = menuRepo.cariGroup(value);break;
                 default:listMenu= menuRepo.findAll();break;
             }
             if(listMenu.isEmpty()){
@@ -275,6 +277,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
                 case "nama" : listMenu = menuRepo.findByNamaContainsIgnoreCase(value);break;
                 case "deskripsi" : listMenu = menuRepo.findByDeskripsiContainsIgnoreCase(value);break;
                 case "path" : listMenu = menuRepo.findByPathContainsIgnoreCase(value);break;
+                case "group":listMenu = menuRepo.cariGroup(value);break;
                 default:listMenu= menuRepo.findAll();break;
             }
             if(listMenu.isEmpty()){

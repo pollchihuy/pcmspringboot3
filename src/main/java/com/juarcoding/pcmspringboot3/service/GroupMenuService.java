@@ -26,6 +26,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -156,6 +157,31 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
 
     @Override
     public ResponseEntity<Object> findByParam(Pageable pageable, String columnName, String value, HttpServletRequest request) {//051-060
+        Page<GroupMenu> page = null;
+        List<RepGroupMenuDTO> listDTO = null;
+        Map<String,Object> data = null;
+        try {
+            switch (columnName){
+                case "nama":page = groupMenuRepo.findByNamaContainsIgnoreCase(value,pageable);break;
+                case "deskripsi":page = groupMenuRepo.findByDeskripsiContainsIgnoreCase(value,pageable);break;
+                default:page = groupMenuRepo.findAll(pageable);
+            }
+            if(page.isEmpty()){
+                return GlobalResponse.dataTidakDitemukan("AUT01FV051",request);
+            }
+            listDTO = mapToDTO(page.getContent());
+            data = tp.transformPagination(listDTO,page,columnName,value);
+        }catch (Exception e){
+            return GlobalResponse.terjadiKesalahan("AUT01FE051",request);
+        }
+        return GlobalResponse.dataDitemukan(data,request);
+    }
+
+    public ResponseEntity<Object> findByParam(Pageable pageable,
+                                              String columnName, String value,
+                                              String status,String kategori,
+                                              LocalDate start, LocalDate end,
+                                              HttpServletRequest request) {//051-060
         Page<GroupMenu> page = null;
         List<RepGroupMenuDTO> listDTO = null;
         Map<String,Object> data = null;

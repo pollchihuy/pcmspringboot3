@@ -14,9 +14,9 @@ public interface GroupMenuRepo extends JpaRepository<GroupMenu, Long> {
     /** SELECT * FROM MstGroupMenu WHERE toLower('variable_') LIKE toLower('%?%') */
     public Page<GroupMenu> findByNamaContainsIgnoreCase(String nama, Pageable pageable);
     public Page<GroupMenu> findByDeskripsiContainsIgnoreCase(String nama, Pageable pageable);
+//    public Page<GroupMenu> findByDeskripsiContainsIgnoreCaseAndStatusAndKategori(String nama,String status,String kategori, Pageable pageable);
 
     public List<GroupMenu> findByNamaContainsIgnoreCase(String nama);
     public List<GroupMenu> findByDeskripsiContainsIgnoreCase(String nama);
-
     public Optional<GroupMenu> findTop1ByOrderByIdDesc();
 }
