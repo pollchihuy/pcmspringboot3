@@ -14,6 +14,7 @@ public class Akses {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "ID",columnDefinition = "comment 'cumi cumi goreng mentega' ")
     @Column(name = "ID")
     private Long id;
     @Column(name = "Nama", nullable = false,unique = true, length = 50)

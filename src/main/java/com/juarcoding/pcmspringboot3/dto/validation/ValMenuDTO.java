@@ -1,6 +1,7 @@
 package com.juarcoding.pcmspringboot3.dto.validation;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.juarcoding.pcmspringboot3.dto.rel.RelGroupMenuDTO;
 import com.juarcoding.pcmspringboot3.model.GroupMenu;
@@ -12,14 +13,15 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ValMenuDTO {
 
     @NotNull(message = "Deskripsi Tidak Boleh Null")
-    @Pattern(regexp = "^[a-zA-Z\\s]{5,50}$",message = "Nama Tidak Valid hanya Alfabet dan spasi Min 5 Max 50 , ex : User Management")
+    @Pattern(regexp = "^[\\w\\s]{5,50}$",message = "Nama Tidak Valid hanya Alfabet dan spasi Min 5 Max 50 , ex : User Management")
     private String nama;
 
     @NotNull(message = "Path Tidak Boleh Null")
-    @Pattern(regexp = "^[a-z\\/\\-]{5,50}$",message = "Path Tidak Valid huruf kecil , hyphen dan slash Min 5 Max 50 , ex : /group-menu")
+    @Pattern(regexp = "^[a-z0-9\\/\\-]{5,50}$",message = "Path Tidak Valid huruf kecil , hyphen dan slash Min 5 Max 50 , ex : /group-menu")
     private String path;
 
     @NotNull(message = "Deskripsi Tidak Boleh Null")

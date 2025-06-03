@@ -69,6 +69,16 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
         return GlobalResponse.dataBerhasilDisimpan(request);
     }
 
+
+    /**
+     *
+     * @param id - parameter id adalah bla bla bla
+     * @param menu - parameter menu adalah bla bla bla
+     * @param request
+     * @return
+     *
+     * deskripsi nya....
+     */
     @Override
     public ResponseEntity<Object> update(Long id, Menu menu, HttpServletRequest request) {//011-020
         Map<String,Object> m = GlobalFunction.extractToken(request);
@@ -87,6 +97,7 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
             menuDB.setNama(menu.getNama());
             menuDB.setDeskripsi(menu.getDeskripsi());
             menuDB.setPath(menu.getPath());
+            menuDB.setGroupMenu(menu.getGroupMenu());
             menuDB.setModifiedBy(Long.parseLong(m.get("userId").toString()));
 
         }catch (Exception e){

@@ -1,7 +1,9 @@
 package com.juarcoding.pcmspringboot3.dto.rel;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RelGroupMenuDTO {
 
     @NotNull

@@ -88,6 +88,25 @@ public class GroupMenuController {
         return groupMenuService.findByParam(pageable,column,value,request);
     }
 
+    @GetMapping("/{sort}/{sort-by}/{page}/{q}")
+    public ResponseEntity<Object> findByParam(
+            @PathVariable String sort,
+            @PathVariable(value = "sort-by") String sortBy,
+            @PathVariable Integer page,
+            @PathVariable Integer q,
+            @RequestParam Integer size,
+            @RequestParam String column,
+            @RequestParam String value,
+            HttpServletRequest request){
+        Pageable pageable = null;
+        sortBy = sortColumn(sortBy);
+        switch (sort) {
+            case "desc":pageable = PageRequest.of(page,size, Sort.by(sortBy).descending());break;
+            default:pageable = PageRequest.of(page,size, Sort.by(sortBy));break;
+        }
+        return groupMenuService.findByParam(pageable,column,value,request);
+    }
+
 //    @GetMapping("/{sort}/{sort-by}/{page}")
 //    @PreAuthorize("hasAuthority('Group-Menu')")
 //    public ResponseEntity<Object> findByParam(

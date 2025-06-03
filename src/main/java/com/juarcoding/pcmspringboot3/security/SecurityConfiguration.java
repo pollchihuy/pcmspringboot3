@@ -44,9 +44,6 @@ public class SecurityConfiguration {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(authService);
-        /**
-         *  nanti dilanjut
-         */
         return authProvider;
     }
 
@@ -67,11 +64,4 @@ public class SecurityConfiguration {
                 addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-
-
-
-
-
 }

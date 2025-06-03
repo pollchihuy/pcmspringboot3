@@ -37,7 +37,6 @@ public class JwtFilter extends OncePerRequestFilter {
         authorization = authorization == null ? "" : authorization;
         String token = "";
         String username = "";
-//        Bearer aijsdoiajhohaoshd
         try{
             if(!"".equals(authorization) &&
                     authorization.startsWith("Bearer ") &&

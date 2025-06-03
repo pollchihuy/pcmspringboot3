@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.WebRequest;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class ResponseHandler {
         m.put("message",message);
 //        m.put("status",status.value());
         m.put("data",data==null?"":data);
-        m.put("timestamp", LocalDateTime.now().toString());
+        m.put("timestamp", Instant.now().toString());
         m.put("success",!status.isError());
         if(errorCode!=null){
             m.put("error-code",errorCode);
@@ -46,7 +47,7 @@ public class ResponseHandler {
         m.put("message",message);
 //        m.put("status",status.value());
         m.put("data",data==null?"":data);
-        m.put("timestamp", LocalDateTime.now().toString());
+        m.put("timestamp", Instant.now().toString());
         m.put("success",!status.isError());
         if(errorCode!=null){
             m.put("error-code",errorCode);
