@@ -23,7 +23,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Qualifier("resourceHandlerMapping")
 
 
     @PostMapping
@@ -79,8 +78,8 @@ public class UserController {
         Pageable pageable = null;
         sortBy = sortColumn(sortBy);
         switch (sort) {
-            case "desc":pageable = PageRequest.of(page,size, Sort.by("id").descending());break;
-            default:pageable = PageRequest.of(page,size, Sort.by("id"));break;
+            case "desc":pageable = PageRequest.of(page,size, Sort.by(sortBy).descending());break;
+            default:pageable = PageRequest.of(page,size, Sort.by(sortBy));break;
         }
         return userService.findByParam(pageable,column,value,request);
     }
@@ -111,12 +110,14 @@ public class UserController {
 
     private String sortColumn(String column){
         switch (column){
-            case "nama-lengkap":column="nama-lengkap";break;
+            case "namaLengkap":column="namaLengkap";break;
             case "username":column="username";break;
             case "alamat":column="alamat";break;
-            case "tanggal-lahir":column="tanggal-lahir";break;
-            case "no-hp":column="no-hp";break;
+            case "tanggalLahir":column="tanggalLahir";break;
+            case "noHp":column="noHp";break;
             case "email":column="email";break;
+            case "namaAkses":column="akses.nama";break;
+            case "umur":column="tanggalLahir";break;//karena umur diambil dari tanggal jadi dengan menggunakan kolom tanggal dapat di lakukan sorting nya
             default:column="id";break;
         }
         return column;

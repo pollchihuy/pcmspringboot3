@@ -114,7 +114,7 @@ public class MenuController {
             case "nama":column="nama";break;
             case "deskripsi":column="deskripsi";break;
             case "path":column="path";break;
-            case "group":column="groupMenu.nama";break;
+            case "namaGroupMenu":column="groupMenu.nama";break;
             default:column="id";break;
         }
         return column;

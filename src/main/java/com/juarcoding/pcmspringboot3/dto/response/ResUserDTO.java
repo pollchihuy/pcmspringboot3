@@ -31,9 +31,21 @@ public class ResUserDTO {
 
     private String alamat;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonProperty("tanggal-lahir")
     private LocalDate tanggalLahir;
 
     private RelAksesDTO akses;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public RelAksesDTO getAkses() {
         return akses;

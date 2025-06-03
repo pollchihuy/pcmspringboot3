@@ -294,13 +294,13 @@ public class UserService implements IService<User>, IReport<User> {
                 case "nama-lengkap":listUser = userRepo.findByNamaLengkapContainsIgnoreCase(value);break;
                 case "alamat":listUser = userRepo.findByAlamatContainsIgnoreCase(value);break;
                 case "no-hp":listUser = userRepo.findByNoHpContainsIgnoreCase(value);break;
-//                case "tanggal-lahir":listUser = userRepo.findByTanggalLahirContainsIgnoreCase(value);break;
                 case "username":listUser = userRepo.findByUsernameContainsIgnoreCase(value);break;
                 case "email":listUser = userRepo.findByEmailContainsIgnoreCase(value);break;
                 case "akses":listUser = userRepo.cariAkses(value);break;
                 case "umur":listUser = userRepo.cariUmur(value);break;
                 default:listUser= userRepo.findAll();break;
             }
+
             if(listUser.isEmpty()){
                 GlobalResponse.
                         manualResponse(response,GlobalResponse.dataTidakDitemukan("AUT04FV081",request));
