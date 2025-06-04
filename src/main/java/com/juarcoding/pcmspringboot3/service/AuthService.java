@@ -152,6 +152,7 @@ public class AuthService implements UserDetailsService {
             token = Crypto.performEncrypt(token);
         }
         m.put("token", token);
+        m.put("urlImage", userNext.getLinkImage());
 
         return new ResponseHandler().handleResponse("Login Berhasil !!",HttpStatus.OK,m,null,request);
     }

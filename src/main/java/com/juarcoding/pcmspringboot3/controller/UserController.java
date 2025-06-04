@@ -29,8 +29,17 @@ public class UserController {
     @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> save(@Valid @RequestBody ValUserDTO valUserDTO,
                                        HttpServletRequest request){
+
         return userService.save(userService.mapToUser(valUserDTO),request);
     }
+//    @PostMapping
+//    @PreAuthorize("hasAuthority('User')")
+//    public ResponseEntity<Object> save(@Valid @RequestBody ValUserDTO valUserDTO,
+//                                       @RequestParam MultipartFile file,
+//                                       HttpServletRequest request){
+//
+//        return userService.save(userService.mapToUser(valUserDTO),file,request);
+//    }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('User')")
@@ -121,5 +130,12 @@ public class UserController {
             default:column="id";break;
         }
         return column;
+    }
+
+    @PostMapping("/files/upload/{username}")
+    public ResponseEntity<Object> uploadImage(
+            @PathVariable String username,
+            @RequestParam MultipartFile file, HttpServletRequest request){
+        return userService.uploadImage(username,file,request);
     }
 }

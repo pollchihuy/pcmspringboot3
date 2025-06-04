@@ -1,6 +1,8 @@
 package com.juarcoding.pcmspringboot3.service;
 
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.juarcoding.pcmspringboot3.core.IReport;
 import com.juarcoding.pcmspringboot3.core.IService;
 import com.juarcoding.pcmspringboot3.dto.report.RepUserDTO;
@@ -27,8 +29,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -40,6 +49,11 @@ import java.util.*;
 @Service
 @Transactional
 public class UserService implements IService<User>, IReport<User> {
+
+    @Autowired
+    private Cloudinary cloudinary;
+    public static final String BASE_URL_IMAGE = System.getProperty("user.dir")+"\\image-saved";
+    private static Path rootPath;
 
     @Autowired
     private UserRepo userRepo;
@@ -373,4 +387,83 @@ public class UserService implements IService<User>, IReport<User> {
     public ResUserDTO mapToDTO(User user){
         return modelMapper.map(user,ResUserDTO.class);
     }
+
+    public ResponseEntity<Object> save(User user,MultipartFile file, HttpServletRequest request) {//001-010
+        Map<String,Object> m = GlobalFunction.extractToken(request);
+        Map map ;
+        try{
+            if(user == null){
+                return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT04FV001",request);
+            }
+
+            rootPath = Paths.get(BASE_URL_IMAGE+"/"+new SimpleDateFormat("ddMMyyyyHHmmssSSS").format(new Date()));
+            String strPathz = rootPath.toAbsolutePath().toString();
+            String strPathzImage = strPathz+"\\"+file.getOriginalFilename();
+            save(file);
+
+            map = cloudinary.uploader().upload(strPathzImage, ObjectUtils.asMap("public_id",file.getOriginalFilename()));
+            user.setPathImage(strPathzImage);
+            user.setLinkImage(map.get("secure_url").toString());
+            user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
+            user.setCreatedBy(Long.parseLong(m.get("userId").toString()));
+            userRepo.save(user);
+        }catch (Exception e){
+            return GlobalResponse.dataGagalDisimpan("AUT04FE001",request);
+        }
+        return GlobalResponse.dataBerhasilDisimpan(request);
+    }
+
+    public void save(MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                throw new IllegalArgumentException("Gagal Untuk menyimpan File kosong !!");
+            }
+            Path destinationFile = this.rootPath.resolve(Paths.get(file.getOriginalFilename()))
+                    .normalize().toAbsolutePath();
+            if (!destinationFile.getParent().equals(this.rootPath.toAbsolutePath())) {
+                // This is a security check
+                throw new IllegalArgumentException(
+                        "Tidak Dapat menyimpan file diluar storage yang sudah ditetapkan !!");
+            }
+            Files.createDirectories(this.rootPath);
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, destinationFile,
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+            throw new IllegalArgumentException("Failed to store file.", e);
+        }
+    }
+
+    public ResponseEntity<Object> uploadImage(String username,MultipartFile file,HttpServletRequest request){
+        Map map ;
+        Map<String,Object> mapResponse ;
+        Optional<User> userOptional = userRepo.findByUsername(username);
+        if(!userOptional.isPresent()){
+            return GlobalResponse.dataTidakDitemukan("XERRORUPLOAD",request);
+        }
+        rootPath = Paths.get(BASE_URL_IMAGE+"/"+new SimpleDateFormat("ddMMyyyyHHmmssSSS").format(new Date()));
+        String strPathz = rootPath.toAbsolutePath().toString();
+        String strPathzImage = strPathz+"\\"+file.getOriginalFilename();
+        save(file);
+
+        try {
+            map = cloudinary.uploader().upload(strPathzImage, ObjectUtils.asMap("public_id",file.getOriginalFilename()));
+            User userDB = userOptional.get();
+            userDB.setModifiedBy(userDB.getId());
+            userDB.setModifiedDate(LocalDateTime.now());
+            userDB.setPathImage(strPathzImage);
+            userDB.setLinkImage(map.get("secure_url").toString());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+        Map<String,Object> m = new HashMap<>();
+        m.put("url-img",map.get("secure_url").toString());
+        return ResponseEntity.status(HttpStatus.OK).body(m);
+//        return GlobalResponse.dataResponseObject(m,request);
+    }
+
 }

@@ -52,12 +52,12 @@ public class Crypto {
 
     public static void main(String[] args) {
 //        String strToEncrypt = "jdbc:sqlserver://host.docker.internal;databaseName=BEB24;schema=dbproject;trustServerCertificate=true";//put text to encrypt in here
-        String strToEncrypt = "jdbc:sqlserver://localhost;trustServerCertificate=true;databaseName=BEB25";//put text to encrypt in here
+        String strToEncrypt = "jdbc:sqlserver://host.docker.internal;trustServerCertificate=true;databaseName=BEB25";//put text to encrypt in here
         System.out.println("Encryption Result : "+performEncrypt(strToEncrypt));
 
 //        jdbc:sqlserver://java-be-1:3377;databaseName=BEB24;schema=dbproject;trustServerCertificate=true
-//        String strToDecrypt = "0d3f28a8cb0577e4fd42fbfdf2f72eac";//put text to decrypt in here
+        String strToDecrypt = "09ce6bf5076fd9ad1c2d8b7f745884726ceb17ce145e01772186f25d9632ce49";//put text to decrypt in here
 //        String strToDecrypt = "b671e1bc7d8a8f8f4f749ab7c4f0d630";//put text to decrypt in here
-//        System.out.println("Decryption Result : "+performDecrypt(strToDecrypt));
+        System.out.println("Decryption Result : "+performDecrypt(strToDecrypt));
     }
 }
