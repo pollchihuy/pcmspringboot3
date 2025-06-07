@@ -37,7 +37,7 @@ public class AESGeneratedKey {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("AES", "BC");
             // Atur panjang kunci (misalnya: 128, 192, atau 256 bit)
-            keyGen.init(128);
+            keyGen.init(256);
             // Generate kunci AES
             aesKey = keyGen.generateKey();
         } catch (NoSuchAlgorithmException e) {

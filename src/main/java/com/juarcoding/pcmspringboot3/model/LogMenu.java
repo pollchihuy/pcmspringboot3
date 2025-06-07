@@ -4,22 +4,32 @@ package com.juarcoding.pcmspringboot3.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "MstGroupMenu")
-public class GroupMenu {
+@Table(name = "LogMstMenu")
+public class LogMenu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "Nama", nullable = false, length = 50,unique = true)
+    @Column(name = "IDMenu")
+    private Long idMenu;
+
+    @Column(name = "Nama", nullable = false, length = 50)
     private String nama;
 
-    @Column(name = "Deskripsi", nullable = false, length = 255,unique = true)
+    @Column(name = "Path", nullable = false, length = 50)
+    private String path;
+
+    @Column(name = "Deskripsi", nullable = false, length = 255)
     private String deskripsi;
+
+    @Column(name = "IDGroupMenu")
+    private Long idGroupMenu;
 
     @Column(name = "CreatedBy",nullable = false,updatable = false)
     private Long createdBy=1L;
@@ -28,12 +38,16 @@ public class GroupMenu {
     @CreationTimestamp
     private LocalDateTime createdDate;
 
-    @Column(name = "ModifiedBy",insertable = false)
-    private Long modifiedBy;
+    @Column(name = "Flag")
+    private Character flag;
 
-    @Column(name = "ModifiedDate",insertable = false)
-    @UpdateTimestamp
-    private LocalDateTime modifiedDate;
+    public Character getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Character flag) {
+        this.flag = flag;
+    }
 
     public Long getId() {
         return id;
@@ -49,6 +63,14 @@ public class GroupMenu {
 
     public void setNama(String nama) {
         this.nama = nama;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getDeskripsi() {
@@ -75,19 +97,19 @@ public class GroupMenu {
         this.createdDate = createdDate;
     }
 
-    public Long getModifiedBy() {
-        return modifiedBy;
+    public Long getIdMenu() {
+        return idMenu;
     }
 
-    public void setModifiedBy(Long modifiedBy) {
-        this.modifiedBy = modifiedBy;
+    public void setIdMenu(Long idMenu) {
+        this.idMenu = idMenu;
     }
 
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+    public Long getIdGroupMenu() {
+        return idGroupMenu;
     }
 
-    public void setModifiedDate(LocalDateTime modifiedDate) {
-        this.modifiedDate = modifiedDate;
+    public void setIdGroupMenu(Long idGroupMenu) {
+        this.idGroupMenu = idGroupMenu;
     }
 }

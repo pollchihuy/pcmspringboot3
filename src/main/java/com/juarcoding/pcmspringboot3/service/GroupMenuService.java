@@ -8,7 +8,9 @@ import com.juarcoding.pcmspringboot3.dto.response.ResGroupMenuDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.ValGroupMenuDTO;
 import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
 import com.juarcoding.pcmspringboot3.model.GroupMenu;
+import com.juarcoding.pcmspringboot3.model.LogGroupMenu;
 import com.juarcoding.pcmspringboot3.repo.GroupMenuRepo;
+import com.juarcoding.pcmspringboot3.repo.LogGroupMenuRepo;
 import com.juarcoding.pcmspringboot3.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,6 +45,9 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
     private GroupMenuRepo groupMenuRepo;
 
     @Autowired
+    private LogGroupMenuRepo logGroupMenuRepo;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
@@ -63,8 +68,10 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
             if(groupMenu == null){
                 return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT01FV001",request);
             }
-            groupMenu.setCreatedBy(Long.parseLong(m.get("userId").toString()));
+            Long userId = Long.parseLong(m.get("userId").toString());
+            groupMenu.setCreatedBy(userId);
             groupMenuRepo.save(groupMenu);
+            logGroupMenuRepo.save(mapToDTO(groupMenu,'i',userId));
         }catch (Exception e){
             return GlobalResponse.dataGagalDisimpan("AUT01FE001",request);
         }
@@ -85,11 +92,12 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
             if(!opGroupMenu.isPresent()){
                 return GlobalResponse.dataTidakDitemukan("AUT01FV013",request);
             }
+            Long userId = Long.parseLong(m.get("userId").toString());
             GroupMenu groupMenuDB = opGroupMenu.get();
             groupMenuDB.setNama(groupMenu.getNama());
             groupMenuDB.setDeskripsi(groupMenu.getDeskripsi());
-            groupMenuDB.setModifiedBy(1L);
-
+            groupMenuDB.setModifiedBy(userId);
+            logGroupMenuRepo.save(mapToDTO(groupMenuDB,'u',userId));
         }catch (Exception e){
             return GlobalResponse.dataGagalDiubah("AUT01FE011",request);
         }
@@ -104,11 +112,13 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
                 return GlobalResponse.objectIsNull("AUT01FV021",request);
             }
             Optional<GroupMenu> opGroupMenu = groupMenuRepo.findById(id);
+            Long userId = Long.parseLong(m.get("userId").toString());
             if(!opGroupMenu.isPresent()){
                 return GlobalResponse.dataTidakDitemukan("AUT01FV022",request);
             }
+            LogGroupMenu logGroupMenu = mapToDTO(opGroupMenu.get(),'d',userId);
             groupMenuRepo.deleteById(id);
-
+            logGroupMenuRepo.save(logGroupMenu);
         }catch (Exception e){
             return GlobalResponse.dataGagalDihapus("AUT01FE021",request);
         }
@@ -353,5 +363,16 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
 
     public ResGroupMenuDTO mapToDTO(GroupMenu groupMenu){
         return modelMapper.map(groupMenu,ResGroupMenuDTO.class);
+    }
+
+    public LogGroupMenu mapToDTO(GroupMenu groupMenu,Character flag,Long userId){
+        LogGroupMenu logGroupMenu = new LogGroupMenu();
+        logGroupMenu.setNama(groupMenu.getNama());
+        logGroupMenu.setDeskripsi(groupMenu.getDeskripsi());
+        logGroupMenu.setFlag(flag);
+        logGroupMenu.setIdGroupMenu(groupMenu.getId());
+        logGroupMenu.setCreatedBy(userId);
+        logGroupMenu.setCreatedDate(groupMenu.getCreatedDate());
+        return logGroupMenu;
     }
 }

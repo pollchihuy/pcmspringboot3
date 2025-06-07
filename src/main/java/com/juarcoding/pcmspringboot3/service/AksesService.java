@@ -8,7 +8,9 @@ import com.juarcoding.pcmspringboot3.dto.response.ResAksesDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.ValAksesDTO;
 import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
 import com.juarcoding.pcmspringboot3.model.Akses;
+import com.juarcoding.pcmspringboot3.model.LogAkses;
 import com.juarcoding.pcmspringboot3.repo.AksesRepo;
+import com.juarcoding.pcmspringboot3.repo.LogAksesRepo;
 import com.juarcoding.pcmspringboot3.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +28,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -39,6 +42,9 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
 
     @Autowired
     private AksesRepo aksesRepo;
+
+    @Autowired
+    private LogAksesRepo logAksesRepo;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -61,8 +67,10 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
             if(akses == null){
                 return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT03FV001",request);
             }
-            akses.setCreatedBy(Long.parseLong(m.get("userId").toString()));
+            Long userId = Long.parseLong(m.get("userId").toString());
+            akses.setCreatedBy(userId);
             aksesRepo.save(akses);
+            logAksesRepo.save(mapToDTO(akses,'i',userId));
         }catch (Exception e){
             return GlobalResponse.dataGagalDisimpan("AUT03FE001",request);
         }
@@ -83,12 +91,13 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
             if(!opAkses.isPresent()){
                 return GlobalResponse.dataTidakDitemukan("AUT03FV013",request);
             }
+            Long userId = Long.parseLong(m.get("userId").toString());
             Akses aksesDB = opAkses.get();
             aksesDB.setNama(akses.getNama());
             aksesDB.setDeskripsi(akses.getDeskripsi());
             aksesDB.setListMenu(akses.getListMenu());
-            aksesDB.setModifiedBy(Long.parseLong(m.get("userId").toString()));
-
+            aksesDB.setModifiedBy(userId);
+            logAksesRepo.save(mapToDTO(aksesDB,'u',userId));
         }catch (Exception e){
             return GlobalResponse.dataGagalDiubah("AUT03FE011",request);
         }
@@ -103,11 +112,13 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
                 return GlobalResponse.objectIsNull("AUT03FV021",request);
             }
             Optional<Akses> opAkses = aksesRepo.findById(id);
+            Long userId = Long.parseLong(m.get("userId").toString());
             if(!opAkses.isPresent()){
                 return GlobalResponse.dataTidakDitemukan("AUT03FV022",request);
             }
+            Akses aksesDB = opAkses.get();
             aksesRepo.deleteById(id);
-
+            logAksesRepo.save(mapToDTO(aksesDB,'d',userId));
         }catch (Exception e){
             return GlobalResponse.dataGagalDihapus("AUT03FE021",request);
         }
@@ -330,5 +341,17 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
 
     public ResAksesDTO mapToDTO(Akses akses){
         return modelMapper.map(akses,ResAksesDTO.class);
+    }
+
+
+    private LogAkses mapToDTO(Akses akses,Character flag, Long userId){
+        LogAkses logAkses = new LogAkses();
+        logAkses.setNama(akses.getNama());
+        logAkses.setDeskripsi(akses.getDeskripsi());
+        logAkses.setIdAkses(akses.getId());
+        logAkses.setCreatedDate(LocalDateTime.now());
+        logAkses.setCreatedBy(userId);
+        logAkses.setFlag(flag);
+        return logAkses;
     }
 }

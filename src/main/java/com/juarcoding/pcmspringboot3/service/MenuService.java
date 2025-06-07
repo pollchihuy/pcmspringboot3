@@ -7,7 +7,9 @@ import com.juarcoding.pcmspringboot3.dto.report.RepMenuDTO;
 import com.juarcoding.pcmspringboot3.dto.response.ResMenuDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.ValMenuDTO;
 import com.juarcoding.pcmspringboot3.handler.ResponseHandler;
+import com.juarcoding.pcmspringboot3.model.LogMenu;
 import com.juarcoding.pcmspringboot3.model.Menu;
+import com.juarcoding.pcmspringboot3.repo.LogMenuRepo;
 import com.juarcoding.pcmspringboot3.repo.MenuRepo;
 import com.juarcoding.pcmspringboot3.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +28,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -39,6 +42,9 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
 
     @Autowired
     private MenuRepo menuRepo;
+
+    @Autowired
+    private LogMenuRepo logMenuRepo;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -61,8 +67,10 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
             if(menu == null){
                 return new ResponseHandler().handleResponse("Object Null !!", HttpStatus.BAD_REQUEST,null,"AUT02FV001",request);
             }
-            menu.setCreatedBy(Long.parseLong(m.get("userId").toString()));
+            Long userId = Long.parseLong(m.get("userId").toString());
+            menu.setCreatedBy(userId);
             menuRepo.save(menu);
+            logMenuRepo.save(mapToDTO(menu,'i',userId));
         }catch (Exception e){
             return GlobalResponse.dataGagalDisimpan("AUT02FE001",request);
         }
@@ -93,12 +101,14 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
             if(!opMenu.isPresent()){
                 return GlobalResponse.dataTidakDitemukan("AUT02FV013",request);
             }
+            Long userId = Long.parseLong(m.get("userId").toString());
             Menu menuDB = opMenu.get();
             menuDB.setNama(menu.getNama());
             menuDB.setDeskripsi(menu.getDeskripsi());
             menuDB.setPath(menu.getPath());
             menuDB.setGroupMenu(menu.getGroupMenu());
-            menuDB.setModifiedBy(Long.parseLong(m.get("userId").toString()));
+            menuDB.setModifiedBy(userId);
+            logMenuRepo.save(mapToDTO(menuDB,'u',userId));
 
         }catch (Exception e){
             return GlobalResponse.dataGagalDiubah("AUT02FE011",request);
@@ -117,7 +127,10 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
             if(!opMenu.isPresent()){
                 return GlobalResponse.dataTidakDitemukan("AUT02FV022",request);
             }
+            Long userId = Long.parseLong(m.get("userId").toString());
+            Menu menuDB = opMenu.get();
             menuRepo.deleteById(id);
+            logMenuRepo.save(mapToDTO(menuDB,'d',userId));
 
         }catch (Exception e){
             return GlobalResponse.dataGagalDihapus("AUT02FE021",request);
@@ -345,5 +358,18 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
 
     public ResMenuDTO mapToDTO(Menu menu){
         return modelMapper.map(menu,ResMenuDTO.class);
+    }
+
+    public LogMenu mapToDTO(Menu menu, Character flag,Long userId){
+        LogMenu logMenu = new LogMenu();
+        logMenu.setIdGroupMenu(menu.getGroupMenu().getId());
+        logMenu.setIdMenu(menu.getId());
+        logMenu.setNama(menu.getNama());
+        logMenu.setDeskripsi(menu.getDeskripsi());
+        logMenu.setPath(menu.getPath());
+        logMenu.setCreatedBy(userId);
+        logMenu.setFlag(flag);
+        logMenu.setCreatedDate(LocalDateTime.now());
+        return logMenu;
     }
 }

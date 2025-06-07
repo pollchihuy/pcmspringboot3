@@ -3,16 +3,14 @@ package com.juarcoding.pcmspringboot3.controller;
 import com.juarcoding.pcmspringboot3.dto.validation.LoginDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.RegisDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.VerifyRegisDTO;
+import com.juarcoding.pcmspringboot3.security.AESGeneratedKey;
 import com.juarcoding.pcmspringboot3.service.AuthService;
 import com.juarcoding.pcmspringboot3.utils.GlobalFunction;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("auth")
@@ -50,4 +48,11 @@ public class AuthController {
             , HttpServletRequest request){
         return authService.refreshToken(authService.mapToUser(loginDTO),request);
     }
+
+    @GetMapping("/gen-key")
+    public String tokenExpired(){
+        return "Your Key : "+AESGeneratedKey.getKey();
+//        return authService.refreshToken(authService.mapToUser(loginDTO),request);
+    }
+
 }

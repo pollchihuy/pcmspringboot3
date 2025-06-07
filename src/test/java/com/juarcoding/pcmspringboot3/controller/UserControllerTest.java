@@ -2,7 +2,9 @@ package com.juarcoding.pcmspringboot3.controller;
 
 import com.juarcoding.pcmspringboot3.config.OtherConfig;
 import com.juarcoding.pcmspringboot3.dto.rel.RelAksesDTO;
+import com.juarcoding.pcmspringboot3.model.Akses;
 import com.juarcoding.pcmspringboot3.model.User;
+import com.juarcoding.pcmspringboot3.repo.AksesRepo;
 import com.juarcoding.pcmspringboot3.repo.UserRepo;
 import com.juarcoding.pcmspringboot3.utils.DataGenerator;
 import com.juarcoding.pcmspringboot3.utils.TokenGenerator;
@@ -33,11 +35,16 @@ public class UserControllerTest extends AbstractTestNGSpringContextTests {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private AksesRepo aksesRepo;
+
+    private Akses akses;
     private JSONObject req;
     private User user;
     private Random rand ;
     private String token;
     private DataGenerator dataGenerator;
+
 
     @BeforeClass
     private void init(){
@@ -47,7 +54,10 @@ public class UserControllerTest extends AbstractTestNGSpringContextTests {
         user = new User();
         dataGenerator = new DataGenerator();
         Optional<User> op = userRepo.findTop1ByOrderByIdDesc();
+        Optional<Akses> opAkses = aksesRepo.findTop1ByOrderByIdDesc();
+
         user = op.get();
+        akses = opAkses.get();
     }
 
     @BeforeTest

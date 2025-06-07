@@ -4,20 +4,24 @@ package com.juarcoding.pcmspringboot3.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "MstGroupMenu")
-public class GroupMenu {
+@Table(name = "MstAkses")
+public class LogAkses {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "Nama", nullable = false, length = 50,unique = true)
-    private String nama;
+    @Column(name = "IDAkses")
+    private Long idAkses;
 
+    @Column(name = "Nama", nullable = false,unique = true, length = 50)
+    private String nama;
     @Column(name = "Deskripsi", nullable = false, length = 255,unique = true)
     private String deskripsi;
 
@@ -28,12 +32,24 @@ public class GroupMenu {
     @CreationTimestamp
     private LocalDateTime createdDate;
 
-    @Column(name = "ModifiedBy",insertable = false)
-    private Long modifiedBy;
+    @Column(name = "Flag")
+    private Character flag;
 
-    @Column(name = "ModifiedDate",insertable = false)
-    @UpdateTimestamp
-    private LocalDateTime modifiedDate;
+    public Long getIdAkses() {
+        return idAkses;
+    }
+
+    public void setIdAkses(Long idAkses) {
+        this.idAkses = idAkses;
+    }
+
+    public Character getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Character flag) {
+        this.flag = flag;
+    }
 
     public Long getId() {
         return id;
@@ -75,19 +91,4 @@ public class GroupMenu {
         this.createdDate = createdDate;
     }
 
-    public Long getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(Long modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(LocalDateTime modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
 }

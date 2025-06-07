@@ -4,21 +4,25 @@ package com.juarcoding.pcmspringboot3.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "MstGroupMenu")
-public class GroupMenu {
+@Table(name = "LogGroupMenu")
+public class LogGroupMenu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "Nama", nullable = false, length = 50,unique = true)
+    @Column(name = "IDGroupMenu")
+    private Long idGroupMenu;
+
+    @Column(name = "Nama", nullable = false, length = 50)
     private String nama;
 
-    @Column(name = "Deskripsi", nullable = false, length = 255,unique = true)
+    @Column(name = "Deskripsi", nullable = false, length = 255)
     private String deskripsi;
 
     @Column(name = "CreatedBy",nullable = false,updatable = false)
@@ -28,12 +32,24 @@ public class GroupMenu {
     @CreationTimestamp
     private LocalDateTime createdDate;
 
-    @Column(name = "ModifiedBy",insertable = false)
-    private Long modifiedBy;
+    @Column(name = "Flag")
+    private Character flag;
 
-    @Column(name = "ModifiedDate",insertable = false)
-    @UpdateTimestamp
-    private LocalDateTime modifiedDate;
+    public Character getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Character flag) {
+        this.flag = flag;
+    }
+
+    public Long getIdGroupMenu() {
+        return idGroupMenu;
+    }
+
+    public void setIdGroupMenu(Long idGroupMenu) {
+        this.idGroupMenu = idGroupMenu;
+    }
 
     public Long getId() {
         return id;
@@ -73,21 +89,5 @@ public class GroupMenu {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public Long getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(Long modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(LocalDateTime modifiedDate) {
-        this.modifiedDate = modifiedDate;
     }
 }
