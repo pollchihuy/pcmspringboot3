@@ -55,8 +55,10 @@ public class SecurityConfiguration {
                     request->request.requestMatchers(
                             "/auth/**",
                             "/swagger-ui/**",
+                            "/h2-console/**",
                             "/v3/api-docs/**"
                     ).permitAll().anyRequest().authenticated()).
+            headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())). // Allow H2 console to run in a frame
             httpBasic(basic -> basic.authenticationEntryPoint(authenticationEntryPoint)).
             exceptionHandling(Customizer.withDefaults()).
             sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).

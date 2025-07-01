@@ -351,6 +351,16 @@ public class GroupMenuService implements IService<GroupMenu>, IReport<GroupMenu>
         }
     }
 
+    @Override
+    public ResponseEntity<Object> save(GroupMenu groupMenu, MultipartFile file, HttpServletRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Object> update(Long id, GroupMenu groupMenu, MultipartFile file, HttpServletRequest request) {
+        return null;
+    }
+
     /** additional function */
 
     public GroupMenu mapToGroupMenu(ValGroupMenuDTO valGroupMenuDTO){

@@ -60,6 +60,13 @@ public class GlobalFunction {
         }
         return new JwtUtility().mappingBodyToken(token);
     }
+    public static Map<String,Object> extractToken(String token){
+        token = token.substring(7);
+        if(JwtConfig.getTokenEncryptEnable().equals("y")){
+            token = Crypto.performDecrypt(token);
+        }
+        return new JwtUtility().mappingBodyToken(token);
+    }
 
 
 //    @Async

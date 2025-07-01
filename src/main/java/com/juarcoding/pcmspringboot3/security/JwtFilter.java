@@ -2,6 +2,7 @@ package com.juarcoding.pcmspringboot3.security;
 
 import com.juarcoding.pcmspringboot3.config.JwtConfig;
 import com.juarcoding.pcmspringboot3.service.AuthService;
+import com.juarcoding.pcmspringboot3.utils.GlobalFunction;
 import com.juarcoding.pcmspringboot3.utils.LoggingFile;
 import com.juarcoding.pcmspringboot3.utils.RequestCapture;
 import jakarta.servlet.FilterChain;
@@ -35,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authorization = request.getHeader("Authorization");
         authorization = authorization == null ? "" : authorization;
-        System.out.println("Content -Type : "+request.getContentType());
+        GlobalFunction.printConsole("Content -Type : "+request.getContentType());
         String token = "";
         String username = "";
         try{

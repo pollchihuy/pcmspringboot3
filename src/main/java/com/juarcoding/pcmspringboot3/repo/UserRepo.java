@@ -43,8 +43,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
     @Query(value = "SELECT x FROM User x WHERE lower(x.akses.nama) LIKE lower(CONCAT('%',?1,'%')) ")
     public List<User> cariAkses(String akses);
 //    public List<User> findByTanggalLahirContainsIgnoreCase(String nama);
-
-
     public Optional<User> findTop1ByOrderByIdDesc();
 
 }

@@ -27,6 +27,7 @@ public class RegisDTO {
             message = "Format Huruf kecil ,numeric dan titik saja min 8 max 16 karakter, ex : paulch.1234")
     private String username;
 
+    /** field untuk email , masukkan nilai sesuai dengan dokumen RFC 5322 */
     @Pattern(regexp = "^(?=.{1,256})(?=.{1,64}@.{1,255}$)(?:(?![.])[a-zA-Z0-9._%+-]+(?:(?<!\\\\)[.][a-zA-Z0-9-]+)*?)@[a-zA-Z0-9.-]+(?:\\.[a-zA-Z]{2,50})+$",
             message = "Format tidak valid ex : user_name123@sub.domain.com")
     private String email;

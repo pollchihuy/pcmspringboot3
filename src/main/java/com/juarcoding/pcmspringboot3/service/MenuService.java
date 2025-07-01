@@ -346,6 +346,16 @@ public class MenuService implements IService<Menu>, IReport<Menu> {
         }
     }
 
+    @Override
+    public ResponseEntity<Object> save(Menu menu, MultipartFile file, HttpServletRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Object> update(Long id, Menu menu, MultipartFile file, HttpServletRequest request) {
+        return null;
+    }
+
     /** additional function */
 
     public Menu mapToMenu(ValMenuDTO valMenuDTO){

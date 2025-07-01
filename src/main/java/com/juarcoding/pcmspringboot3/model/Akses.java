@@ -19,7 +19,9 @@ public class Akses {
     private Long id;
     @Column(name = "Nama", nullable = false,unique = true, length = 50)
     private String nama;
-    @Column(name = "Deskripsi", nullable = false, length = 255,unique = true)
+    /** Adapt when migration */
+    @Column(name = "Deskripsi",
+            nullable = false, length = 255,unique = true)
     private String deskripsi;
 
 //    @ManyToMany

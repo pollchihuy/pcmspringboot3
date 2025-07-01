@@ -10,11 +10,11 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="com.juarcoding.pcmspringboot3" level="info" additivity="false">
+        <Logger name="com.juarcoding.pcmspringboot3" level="error" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileLogger"/>
         </Logger>
-        <Root level="info">
+        <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>

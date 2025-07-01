@@ -403,6 +403,7 @@ public class UserService implements IService<User>, IReport<User> {
 
             map = cloudinary.uploader().upload(strPathzImage, ObjectUtils.asMap("public_id",file.getOriginalFilename()));
             user.setPathImage(strPathzImage);
+            user.setRegistered(true);
             user.setLinkImage(map.get("secure_url").toString());
             user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
             user.setCreatedBy(Long.parseLong(m.get("userId").toString()));
@@ -437,7 +438,12 @@ public class UserService implements IService<User>, IReport<User> {
         }
     }
 
-    public ResponseEntity<Object> uploadImage(String username,MultipartFile file,HttpServletRequest request){
+    @Override
+    public ResponseEntity<Object> update(Long id, User user, MultipartFile file, HttpServletRequest request) {
+        return null;
+    }
+
+    public ResponseEntity<Object> uploadImage(String username, MultipartFile file, HttpServletRequest request){
         Map map ;
         Map<String,Object> mapResponse ;
         Optional<User> userOptional = userRepo.findByUsername(username);

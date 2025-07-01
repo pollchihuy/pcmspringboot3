@@ -329,6 +329,16 @@ public class AksesService implements IService<Akses>, IReport<Akses> {
         }
     }
 
+    @Override
+    public ResponseEntity<Object> save(Akses akses, MultipartFile file, HttpServletRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Object> update(Long id, Akses akses, MultipartFile file, HttpServletRequest request) {
+        return null;
+    }
+
     /** additional function */
 
     public Akses mapToAkses(ValAksesDTO valAksesDTO){

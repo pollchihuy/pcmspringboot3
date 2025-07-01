@@ -1,17 +1,16 @@
 package com.juarcoding.pcmspringboot3.repo;
 
-
-import com.juarcoding.pcmspringboot3.model.GroupMenu;
 import com.juarcoding.pcmspringboot3.model.Menu;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 public interface MenuRepo extends JpaRepository<Menu, Long> {
 
     public Page<Menu> findByNamaContainsIgnoreCase(String nama, Pageable pageable);

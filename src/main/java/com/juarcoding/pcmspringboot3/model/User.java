@@ -81,7 +81,7 @@ public class User implements UserDetails {
     @Column(name = "TokenEstafet",length = 64)
     private String tokenEstafet;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IDAkses",foreignKey = @ForeignKey(name = "fk-user-to-akses"))
     private Akses akses;
 

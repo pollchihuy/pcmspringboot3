@@ -27,7 +27,7 @@ public class Menu {
     @Column(name = "Deskripsi", nullable = false, length = 255,unique = true)
     private String deskripsi;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IDGroupMenu",foreignKey = @ForeignKey(name = "fk-to-groupmenu"))
     private GroupMenu groupMenu;
 

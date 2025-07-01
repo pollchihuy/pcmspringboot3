@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  application:
+    container_name: restapi
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - restapi_network
+
+  frontend:
+    container_name: thymeleaf
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8095"
+    networks:
+      - restapi_network
+
+networks:
+  restapi-network:
+    name: restapi-network
+    driver: bridge
+

@@ -1,13 +1,13 @@
 package com.juarcoding.pcmspringboot3.controller;
 
 import com.juarcoding.pcmspringboot3.config.OtherConfig;
+import com.juarcoding.pcmspringboot3.dto.rel.RelAksesDTO;
 import com.juarcoding.pcmspringboot3.dto.validation.ValUserDTO;
 import com.juarcoding.pcmspringboot3.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,7 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.HandlerMapping;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("user")
@@ -23,15 +24,13 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-
-    @PostMapping
-    @PreAuthorize("hasAuthority('User')")
-    public ResponseEntity<Object> save(@Valid @RequestBody ValUserDTO valUserDTO,
-                                       HttpServletRequest request){
-
-        return userService.save(userService.mapToUser(valUserDTO),request);
-    }
+//    @PostMapping
+//    @PreAuthorize("hasAuthority('User')")
+//    public ResponseEntity<Object> save(@Valid @RequestBody ValUserDTO valUserDTO,
+//                                       HttpServletRequest request){
+//
+//        return userService.save(userService.mapToUser(valUserDTO),request);
+//    }
 //    @PostMapping
 //    @PreAuthorize("hasAuthority('User')")
 //    public ResponseEntity<Object> save(@Valid @RequestBody ValUserDTO valUserDTO,
@@ -40,6 +39,40 @@ public class UserController {
 //
 //        return userService.save(userService.mapToUser(valUserDTO),file,request);
 //    }
+    @PostMapping
+    @PreAuthorize("hasAuthority('User')")
+    public ResponseEntity<Object> save(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("email") String email,
+            @RequestParam("namaLengkap") String namaLengkap,
+            @RequestParam("alamat") String alamat,
+            @RequestParam("tanggalLahir") String tanggalLahir,
+            @RequestParam("idAkses") String idAkses,
+            @RequestParam("noHp") String noHp,
+            @RequestParam("file") MultipartFile file,
+           HttpServletRequest request){
+
+        return userService.save(userService.mapToUser(mapToValUser(username,password,email,namaLengkap,alamat,tanggalLahir,idAkses,noHp)),file,request);
+    }
+
+    private ValUserDTO mapToValUser(String username,String password,
+                                    String email,String namaLengkap,String alamat,
+                                    String tanggalLahir,String idAkses,String noHp){
+        ValUserDTO valUserDTO = new ValUserDTO();
+        valUserDTO.setUsername(username);
+        valUserDTO.setPassword(password);
+        valUserDTO.setEmail(email);
+        valUserDTO.setNoHp(noHp);
+        valUserDTO.setNamaLengkap(namaLengkap);
+        valUserDTO.setAlamat(alamat);
+        RelAksesDTO relAksesDTO = new RelAksesDTO();
+        relAksesDTO.setId(Long.parseLong(idAkses));
+        valUserDTO.setAkses(relAksesDTO);
+        valUserDTO.setTanggalLahir(LocalDate.parse(tanggalLahir));
+
+        return valUserDTO;
+    }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('User')")

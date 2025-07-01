@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "MstAkses")
+@Table(name = "LogMstAkses")
 public class LogAkses {
 
     @Id
@@ -20,9 +20,9 @@ public class LogAkses {
     @Column(name = "IDAkses")
     private Long idAkses;
 
-    @Column(name = "Nama", nullable = false,unique = true, length = 50)
+    @Column(name = "Nama", nullable = false,length = 50)
     private String nama;
-    @Column(name = "Deskripsi", nullable = false, length = 255,unique = true)
+    @Column(name = "Deskripsi", nullable = false, length = 255)
     private String deskripsi;
 
     @Column(name = "CreatedBy",nullable = false,updatable = false)

@@ -1,6 +1,6 @@
 spring.application.name=pcmspringboot3
 
-server.port=8081
+server.port=8080
 #jdbc:h2:./my-db/database
 spring.datasource.url=537ec557dea2230d98867b241c7c97dc80d86f26716728b718db9dd30e95bf75
 spring.datasource.username=0f2b74230d5d715cf09793ccaa81ccea
